@@ -22,9 +22,9 @@ add_definitions(-DASIO_HAS_CSTDINT)
 add_definitions(-DASIO_HAS_STD_SHARED_PTR)
 add_definitions(-DASIO_HAS_STD_TYPE_TRAITS)
 
-set(MSP_SOURCE_DIR buzz/src/src_fc)
-set(MSP_INCLUDE_DIR buzz/include/inc_fc/msp)
-include_directories(${MSP_INCLUDE_DIR})
+# set(MSP_SOURCE_DIR buzz/src/src_fc)
+# set(MSP_INCLUDE_DIR buzz/include/inc_fc/msp)
+# include_directories(${MSP_INCLUDE_DIR})
 
 
 
