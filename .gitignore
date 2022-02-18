@@ -1,3 +1,7 @@
+# Buzz Scripts
+*.bo
+*.bdb
+
 # Build Directory
 build/
 
