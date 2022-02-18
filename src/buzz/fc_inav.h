@@ -16,7 +16,7 @@ extern "C"
 #endif
 
 #include <buzz/buzzvm.h>
-#include "buzzcognifly_closures.h"
+#include "buzzpipuck_closures.h"
 #include <sys/time.h>
 
 extern float CMDS[6];
