@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(MY_COGNIFLY LANGUAGES C CXX)
+project(MY_PIPUCK LANGUAGES C CXX)
 set(CMAKE_C_FLAGS "-Wall -g")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_INSTALL_PREFIX}/share/buzz/cmake)
 
@@ -36,12 +36,12 @@ link_directories(${KHEPERA_LIBRARY_DIR})
 # add_library(mspclient ${MSP_SOURCE_DIR}/Client.cpp ${MSP_SOURCE_DIR}/PeriodicTimer.cpp)
 # target_link_libraries(mspclient ${CMAKE_THREAD_LIBS_INIT} ASIO::ASIO)
 
-add_executable(bzzCognifly
+add_executable(bzzPuck
   buzz/buzz_utility.c buzz/buzz_utility.h
-  buzz/buzzcognifly_closures.c buzz/buzzcognifly_closures.h
-  buzz/cognifly_utility.c buzz/cognifly_utility.h
+  buzz/buzzpipuck_closures.c buzz/buzzpipuck_closures.h
+  buzz/pipuck_utility.c buzz/pipuck_utility.h
   buzz/fc_inav.cpp                              buzz/fc_inav.h
-  buzz/bzzcognifly.c)
-target_link_libraries(bzzCognifly PUBLIC ${EIGEN3_LIBRARY} ${BUZZ_LIBRARY} ${BUZZ_LIBRARY_DEBUG} -lpthread -lm)
+  buzz/bzzpuck.c)
+target_link_libraries(bzzPuck PUBLIC ${EIGEN3_LIBRARY} ${BUZZ_LIBRARY} ${BUZZ_LIBRARY_DEBUG} -lpthread -lm)
 
-install(TARGETS bzzCognifly RUNTIME DESTINATION bin)
+install(TARGETS bzzPuck RUNTIME DESTINATION bin)
