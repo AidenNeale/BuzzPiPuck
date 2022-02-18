@@ -1,0 +1,29 @@
+function aggregate() {
+  i = 0
+  while(i < 3){
+    log("Test ", i)
+    i += 1
+  }
+  log("Test123")
+}
+
+
+#################################################
+### BUZZ FUNCTIONS ##############################
+#################################################
+
+# Executed at init time
+function init() {
+}
+
+# Executed every time step
+function step() {
+  aggregate()
+}
+
+# Executed once when the robot (or the simulator) is reset.
+function reset() {
+}
+# Execute at exit
+function destroy() {
+}
