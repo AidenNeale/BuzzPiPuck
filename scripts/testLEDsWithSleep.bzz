@@ -10,6 +10,7 @@ function init() {
 function step() {
   log("Reaching Step")
   set_outer_leds(1, 0, 0, 0, 0, 0, 0, 0)
+  log("Reaching Sleep")
   sleep(1.0)
   set_outer_leds(0, 1, 0, 0, 0, 0, 0, 0)
   sleep(1.0)
