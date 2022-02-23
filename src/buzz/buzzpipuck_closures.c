@@ -103,6 +103,7 @@ int pipuck_set_outer_leds(buzzvm_t vm) {
 
 int buzz_sleep_ms(buzzvm_t vm) {
   buzzvm_lnum_assert(vm, 1);
+  buzzvm_lload(vm, 1); /* LED0 */
   buzzvm_type_assert(vm, 1, BUZZTYPE_FLOAT);
   struct timespec ts;
   ts.tv_sec = ((int) buzzvm_stack_at(vm, 1)->f.value) / 1;
