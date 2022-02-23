@@ -37,10 +37,12 @@ link_directories(${KHEPERA_LIBRARY_DIR})
 # target_link_libraries(mspclient ${CMAKE_THREAD_LIBS_INIT} ASIO::ASIO)
 
 add_executable(bzzPuck
-  buzz/buzz_utility.c buzz/buzz_utility.h
-  buzz/buzzpipuck_closures.c buzz/buzzpipuck_closures.h
-  buzz/pipuck_utility.c buzz/pipuck_utility.h
-  buzz/fc_inav.cpp                              buzz/fc_inav.h
+  buzz/buzz_utility.c               buzz/buzz_utility.h
+  buzz/buzzpipuck_closures.c        buzz/buzzpipuck_closures.h
+  buzz/pipuck_utility.c             buzz/pipuck_utility.h
+  buzz/fc_inav.cpp                  buzz/fc_inav.h
+  buzz/include/src_puck/i2c.h                buzz/src_puck/i2c.c
+  buzz/include/src_puck/PiPuck.h             buzz/src_puck/PiPuck.c
   buzz/bzzpuck.c)
 target_link_libraries(bzzPuck PUBLIC ${EIGEN3_LIBRARY} ${BUZZ_LIBRARY} ${BUZZ_LIBRARY_DEBUG} -lpthread -lm)
 
