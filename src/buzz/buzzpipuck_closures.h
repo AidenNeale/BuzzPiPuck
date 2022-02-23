@@ -14,7 +14,7 @@ extern int buzz_pipuck_print(buzzvm_t vm);
  * Sets the wheel speeds to ls (left) and rs (right)
  * speeds are expressed in cm/s
  */
-extern int buzzkh4_set_wheels(buzzvm_t vm);
+extern int pipuck_set_wheels(buzzvm_t vm);
 
 /*
  * set_leds(r,g,b) function in Buzz
