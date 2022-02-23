@@ -198,12 +198,12 @@ int buzz_listen_tcp() {
                                iface->ai_socktype,
                                iface->ai_protocol);
       if(TCP_COMM_STREAM > 0) {
-         int true = 1;
+         int True = 1;
          if((setsockopt(TCP_COMM_STREAM,
                         SOL_SOCKET,
                         SO_REUSEADDR,
-                        &true,
-                        sizeof(true)) != -1)
+                        &True,
+                        sizeof(True)) != -1)
             &&
             (bind(TCP_COMM_STREAM,
                   iface->ai_addr,
