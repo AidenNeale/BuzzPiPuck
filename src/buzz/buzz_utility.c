@@ -283,12 +283,15 @@ static const char* buzz_error_info() {
 /****************************************/
 
 static int buzz_register_hooks() {
-   buzzvm_pushs(VM,  buzzvm_string_register(VM, "print", 1));
-   buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_pipuck_print));
-   buzzvm_gstore(VM);
-   buzzvm_pushs(VM,  buzzvm_string_register(VM, "log", 1));
-   buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_pipuck_print));
-   buzzvm_gstore(VM);
+  buzzvm_pushs(VM,  buzzvm_string_register(VM, "print", 1));
+  buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_pipuck_print));
+  buzzvm_gstore(VM);
+  buzzvm_pushs(VM,  buzzvm_string_register(VM, "log", 1));
+  buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_pipuck_print));
+  buzzvm_gstore(VM);
+  buzzvm_pushs(VM,  buzzvm_string_register(VM, "set_wheels", 1));
+  buzzvm_pushcc(VM, buzzvm_function_register(VM, pipuck_set_wheels));
+  buzzvm_gstore(VM);
   //  buzzvm_pushs(VM,  buzzvm_string_register(VM, "set_leds", 1));
   //  buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_puck_set_leds));
   //  buzzvm_gstore(VM);
