@@ -8,7 +8,6 @@ function init() {
 
 # Executed every time step
 function step() {
-  log("Reaching Step")
   set_wheels(10.0, 10.0)
 }
 
