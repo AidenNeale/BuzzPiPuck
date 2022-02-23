@@ -1,7 +1,8 @@
 #define _GNU_SOURCE
-#include <stdio.h>
 #include <math.h>
 #include <pthread.h>
+#include <time.h>
+#include <stdio.h>
 #include "buzzpipuck_closures.h"
 #include "pipuck_utility.h"
 
@@ -69,6 +70,45 @@ int pipuck_set_wheels(buzzvm_t vm) {
    set_motor_speeds(buzzvm_stack_at(vm, 2)->f.value * 10.0f, /* Left speed */
                     buzzvm_stack_at(vm, 1)->f.value * 10.0f);/* Right speed */
    return buzzvm_ret0(vm);
+}
+
+int pipuck_set_outer_leds(buzzvm_t vm) {
+  buzzvm_lnum_assert(vm, 8);
+  buzzvm_lload(vm, 1); /* LED0 */
+  buzzvm_lload(vm, 2); /* LED1 */
+  buzzvm_lload(vm, 3); /* LED2 */
+  buzzvm_lload(vm, 4); /* LED3 */
+  buzzvm_lload(vm, 5); /* LED4 */
+  buzzvm_lload(vm, 6); /* LED5 */
+  buzzvm_lload(vm, 7); /* LED6 */
+  buzzvm_lload(vm, 8); /* LED7 */
+  buzzvm_type_assert(vm, 8, BUZZTYPE_INT);
+  buzzvm_type_assert(vm, 7, BUZZTYPE_INT);
+  buzzvm_type_assert(vm, 6, BUZZTYPE_INT);
+  buzzvm_type_assert(vm, 5, BUZZTYPE_INT);
+  buzzvm_type_assert(vm, 4, BUZZTYPE_INT);
+  buzzvm_type_assert(vm, 3, BUZZTYPE_INT);
+  buzzvm_type_assert(vm, 2, BUZZTYPE_INT);
+  buzzvm_type_assert(vm, 1, BUZZTYPE_INT);
+  set_outer_leds(buzzvm_stack_at(vm, 1)->i.value,  /* LED0 */
+                buzzvm_stack_at(vm, 2)->i.value,  /* LED1 */
+                buzzvm_stack_at(vm, 3)->i.value,  /* LED2 */
+                buzzvm_stack_at(vm, 4)->i.value,  /* LED3 */
+                buzzvm_stack_at(vm, 5)->i.value,  /* LED4 */
+                buzzvm_stack_at(vm, 6)->i.value,  /* LED5 */
+                buzzvm_stack_at(vm, 7)->i.value,  /* LED6 */
+                buzzvm_stack_at(vm, 8)->i.value); /* LED7 */
+  return buzzvm_ret0(vm);
+}
+
+int buzz_sleep_ms(buzzvm_t vm) {
+  buzzvm_lnum_assert(vm, 1);
+  buzzvm_type_assert(vm, 1, BUZZTYPE_FLOAT);
+  struct timespec ts;
+  ts.tv_sec = ((int) buzzvm_stack_at(vm, 1)->f.value) / 1;
+  ts.tv_nsec = (((int) buzzvm_stack_at(vm, 1)->f.value) % 1) * 1000000000;
+  nanosleep(&ts, NULL);
+  return buzzvm_ret0(vm);
 }
 
 // void WrapValue(float *t_value) {

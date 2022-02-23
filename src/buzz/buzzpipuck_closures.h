@@ -4,9 +4,6 @@
 #include "PiPuck.h"
 #include <buzz/buzzvm.h>
 
-/*
- * prextern int() function in Buzz
- */
 extern int buzz_pipuck_print(buzzvm_t vm);
 
 /*
@@ -16,17 +13,9 @@ extern int buzz_pipuck_print(buzzvm_t vm);
  */
 extern int pipuck_set_wheels(buzzvm_t vm);
 
-/*
- * set_leds(r,g,b) function in Buzz
- * Sets the color of the 3 leds to (r,g,b)
- * speeds are expressed in cm/s
- */
-// extern int buzzkh4_set_leds(buzzvm_t vm);
-// extern int buzzkh4_set_led(buzzvm_t vm);
-// extern int buzzkh4_set_led_freq(buzzvm_t vm);
-// //extern void set_single_led(int r, int g, int b, int n);
-// extern void turnon_led(uint8_t on);
-// extern long get_led_freq();
+extern int pipuck_set_outer_leds(buzzvm_t vm);
+
+extern int buzz_sleep_ms(buzzvm_t vm);
 
 /*
  * Updates battery information in Buzz
