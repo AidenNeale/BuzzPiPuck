@@ -581,23 +581,13 @@ void buzz_script_step() {
 /****************************************/
 
 void buzz_script_destroy() {
-//printf("buzz_script_destroy\n");
    /* Cancel thread */
    pthread_cancel(INCOMING_MSG_THREAD);
    pthread_join(INCOMING_MSG_THREAD, NULL);
-   /*camera thread*/
-//printf("PRECANCEL\n");
-   // pthread_cancel(blob_manage);
-//printf("PREJOIN\n");
-   // pthread_join(blob_manage, NULL);
-//printf("AFTERJOIN\n");
-   //stop_camera();
-//printf("STOPCAM\n");
-   // pthread_cancel(blink_thread);
-   // pthread_join(blink_thread, NULL);
 
    /* Get rid of stream buffer */
    free(STREAM_SEND_BUF);
+
    /* Get rid of virtual machine */
    if(VM) {
       if(VM->state != BUZZVM_STATE_READY) {
