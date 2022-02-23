@@ -8,7 +8,6 @@ function init() {
 
 # Executed every time step
 function step() {
-  log("Reaching Step")
   set_outer_leds(1, 0, 0, 0, 0, 0, 0, 0)
   set_outer_leds(0, 1, 0, 0, 0, 0, 0, 0)
   set_outer_leds(0, 0, 1, 0, 0, 0, 0, 0)
