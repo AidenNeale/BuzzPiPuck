@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
    signal(SIGTERM, ctrlc_handler);
    signal(SIGINT, ctrlc_handler);
    /* Initialize the robot */
-   kh4_setup();
+   pipuck_setup();
    /*initialize camera thread*/
    //camera_routine();
    /*initialize LED thread*/
@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
    }
 
    /* Stop the robot */
-   kh4_done();
+   pipuck_done();
    /* All done */
    return 0;
 }

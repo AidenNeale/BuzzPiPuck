@@ -2,10 +2,8 @@
 #define KH4_UTILITY_H
 #include "fc_inav.h"
 
-extern void kh4_setup();
+extern void pipuck_setup();
 
-extern void kh4_done();
-
-// extern knet_dev_t* DSPIC;
+extern void pipuck_done();
 
 #endif

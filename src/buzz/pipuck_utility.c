@@ -16,16 +16,15 @@ static const int MAX_SPEED     = 400; /* mm/sec */
 /****************************************/
 /****************************************/
 
-void kh4_setup() {
-   // Set the libkhepera debug level
+void pipuck_setup() {
+  fprintf(stdout, "Robot setup.\n");
 }
 
 /****************************************/
 /****************************************/
 
-void kh4_done() {
-   fprintf(stdout, "Robot stopped.\n");
-   CMDS[4] = 1000;
+void pipuck_done() {
+  fprintf(stdout, "Robot stopped.\n");
 }
 
 /****************************************/
