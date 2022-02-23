@@ -1,0 +1,21 @@
+#################################################
+### BUZZ FUNCTIONS ##############################
+#################################################
+
+# Executed at init time
+function init() {
+}
+
+# Executed every time step
+function step() {
+  log("Reaching Step")
+  set_wheels(10.0, 10.0)
+}
+
+# Executed once when the robot (or the simulator) is reset.
+function reset() {
+}
+# Execute at exit
+function destroy() {
+  set_wheels(0.0, 0.0)
+}
