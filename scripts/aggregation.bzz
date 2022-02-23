@@ -1,0 +1,41 @@
+function rtod(r) {
+   return (r*(180.0/math.pi))
+}
+
+function aggregate() {
+  # neighbors.foreach applies the function to all robots within distance of each other
+  neighbors.foreach(function(rid ,data) {
+    degrees = rtod(data.azimuth)
+    if(degrees < 25  and degrees > (-25)) {  # Checks if any robot is within -25 degrees and 25 degrees of vision
+      set_wheels(10.0, -10.0) # Sets the velocity of the wheels
+    }
+		else if (degrees > 25){
+      set_wheels(4.0, 10.0) # Sets the velocity of the wheels if no robot is in range of vision
+    }
+    else {
+      set_wheels(10.0, 4.0) # Sets the velocity of the wheels if no robot is in range of vision
+    }
+  })
+}
+
+
+#################################################
+### BUZZ FUNCTIONS ##############################
+#################################################
+
+# Executed at init time
+function init() {
+}
+
+# Executed every time step
+function step() {
+  aggregate()
+}
+
+# Executed once when the robot (or the simulator) is reset.
+function reset() {
+}
+# Execute at exit
+function destroy() {
+  set_wheels(0.0, 0.0)
+}
