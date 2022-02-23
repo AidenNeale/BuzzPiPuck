@@ -1,0 +1,38 @@
+#################################################
+### BUZZ FUNCTIONS ##############################
+#################################################
+
+# Executed at init time
+function init() {
+}
+
+# Executed every time step
+function step() {
+  log("Reaching Step")
+  set_outer_leds(1, 0, 0, 0, 0, 0, 0, 0)
+  sleep(1.0)
+  set_outer_leds(0, 1, 0, 0, 0, 0, 0, 0)
+  sleep(1.0)
+  set_outer_leds(0, 0, 1, 0, 0, 0, 0, 0)
+  sleep(1.0)
+  set_outer_leds(0, 0, 0, 1, 0, 0, 0, 0)
+  sleep(1.0)
+  set_outer_leds(0, 0, 0, 0, 1, 0, 0, 0)
+  sleep(1.0)
+  set_outer_leds(0, 0, 0, 0, 0, 1, 0, 0)
+  sleep(1.0)
+  set_outer_leds(0, 0, 0, 0, 0, 0, 1, 0)
+  sleep(1.0)
+  set_outer_leds(0, 0, 0, 0, 0, 0, 0, 1)
+  sleep(1.0)
+  set_outer_leds(0, 0, 0, 0, 0, 0, 0, 0)
+  sleep(1.0)
+}
+
+# Executed once when the robot (or the simulator) is reset.
+function reset() {
+}
+# Execute at exit
+function destroy() {
+  set_wheels(0.0, 0.0)
+}
