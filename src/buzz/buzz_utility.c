@@ -292,9 +292,12 @@ static int buzz_register_hooks() {
   buzzvm_pushs(VM,  buzzvm_string_register(VM, "set_wheels", 1));
   buzzvm_pushcc(VM, buzzvm_function_register(VM, pipuck_set_wheels));
   buzzvm_gstore(VM);
-  //  buzzvm_pushs(VM,  buzzvm_string_register(VM, "set_leds", 1));
-  //  buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_puck_set_leds));
-  //  buzzvm_gstore(VM);
+  buzzvm_pushs(VM,  buzzvm_string_register(VM, "set_outer_leds", 1));
+  buzzvm_pushcc(VM, buzzvm_function_register(VM, pipuck_set_outer_leds));
+  buzzvm_gstore(VM);
+  buzzvm_pushs(VM,  buzzvm_string_register(VM, "sleep", 1));
+  buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_sleep_ms));
+  buzzvm_gstore(VM);
   //  buzzvm_pushs(VM,  buzzvm_string_register(VM, "set_led", 1));
   //  buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_puck_set_led));
   //  buzzvm_gstore(VM);
@@ -307,7 +310,7 @@ static int buzz_register_hooks() {
 
 int buzz_script_set(const char* bo_filename,
                     const char* bdbg_filename,
-		    int robot_id) {
+		                int robot_id) {
    /* Get hostname */
    char hstnm[30];
    gethostname(hstnm, 30);
