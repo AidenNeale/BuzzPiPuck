@@ -455,13 +455,11 @@ void buzz_script_step() {
 
       //if(x > MSG_RANGE) { // limit the msg range of the nieghbor
         buzzneighbors_add(VM, PACKETS_FIRST->id, d, a, e);
-      //   printf("value of x and y from %d are: %0.2f\t %0.2f\t %0.2f\n",PACKETS_FIRST->id,x,y,t);
         uint16_t msgsz;
         do {
            /* Get payload size */
            msgsz = *(uint16_t*)(pl + tot); // Get message size
            tot += sizeof(uint16_t);
-           /* fprintf(stderr, "[DEBUG]    msg size = %u, tot = %zu\n", msgsz, tot); */
            /* Make sure the message payload can be read */
            if(msgsz > 0 && msgsz <= MSG_SIZE - tot) {
               /* Append message to the Buzz input message queue */
@@ -470,7 +468,6 @@ void buzz_script_step() {
                  PACKETS_FIRST->id,
                  buzzmsg_payload_frombuffer(pl + tot, msgsz));
               tot += msgsz;
-              /* fprintf(stderr, "[DEBUG]    appended message, tot = %zu\n", tot); */
            }
         }
         while(MSG_SIZE - tot > sizeof(uint16_t) && msgsz > 0);
