@@ -13,7 +13,6 @@ static const float filter_time_const = 0.02;
 float ir_table [8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 int rgb_val[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 long led_freq = -1;
-
 int US_ENABLED = 0;
 int TurningMechanism = 0;
 
@@ -212,84 +211,6 @@ int buzz_sleep_ms(buzzvm_t vm) {
 //    //buzzvm_gload(vm);
 //    SetWheelSpeedsFromVector(vect);
 //    return buzzvm_ret0(vm);
-// }
-
-// void set_single_led(int r, int g, int b, int no) {
-//   pthread_mutex_lock(&led_mutex);
-//   rgb_val[no*3]=r;
-//   rgb_val[no*3+1]=g;
-//   rgb_val[no*3+2]=b;
-//   pthread_mutex_unlock(&led_mutex);
-// }
-
-// int buzzkh4_set_leds(buzzvm_t vm) {
-//    buzzvm_lnum_assert(vm, 3);
-//    buzzvm_lload(vm, 1); /* Red */
-//    buzzvm_lload(vm, 2); /* Green */
-//    buzzvm_lload(vm, 3); /* Blue */
-//    buzzvm_type_assert(vm, 3, BUZZTYPE_INT);
-//    buzzvm_type_assert(vm, 2, BUZZTYPE_INT);
-//    buzzvm_type_assert(vm, 1, BUZZTYPE_INT);
-//    int32_t r = buzzvm_stack_at(vm, 3)->i.value;
-//    int32_t g = buzzvm_stack_at(vm, 2)->i.value;
-//    int32_t b = buzzvm_stack_at(vm, 1)->i.value;
-//    /* set_single_led(r, g, b, 0);
-//    set_single_led(r, g, b, 1);
-//    set_single_led(r, g, b, 2); */
-//    return buzzvm_ret0(vm);
-// }
-
-// int buzzkh4_set_led(buzzvm_t vm) {
-//    buzzvm_lnum_assert(vm, 4);
-//    buzzvm_lload(vm, 1); /* Red */
-//    buzzvm_lload(vm, 2); /* Green */
-//    buzzvm_lload(vm, 3); /* Blue */
-//    buzzvm_lload(vm, 4); /* No */
-//    buzzvm_type_assert(vm, 4, BUZZTYPE_INT);
-//    buzzvm_type_assert(vm, 3, BUZZTYPE_INT);
-//    buzzvm_type_assert(vm, 2, BUZZTYPE_INT);
-//    buzzvm_type_assert(vm, 1, BUZZTYPE_INT);
-//    int32_t r = buzzvm_stack_at(vm, 4)->i.value;
-//    int32_t g = buzzvm_stack_at(vm, 3)->i.value;
-//    int32_t b = buzzvm_stack_at(vm, 2)->i.value;
-//    int32_t n = buzzvm_stack_at(vm, 1)->i.value;
-//    /* set_single_led(r,g,b,n); */
-//    return buzzvm_ret0(vm);
-// }
-
-// // led freq input: 0-100, output: in us, min: 10000, max 1000000
-// int buzzkh4_set_led_freq(buzzvm_t vm) {
-//    buzzvm_lnum_assert(vm, 1);
-//    buzzvm_lload(vm, 1); /* freq */
-//    buzzvm_type_assert(vm, 1, BUZZTYPE_INT);
-//    long f = buzzvm_stack_at(vm, 1)->i.value;
-//    if(f!=0){
-//      f = 10000 + f*(1000000-10000)/100;
-//    }
-//   pthread_mutex_lock(&led_mutex);
-//   led_freq = f;
-//   pthread_mutex_unlock(&led_mutex);
-//    return buzzvm_ret0(vm);
-// }
-
-// long get_led_freq(){
-//   pthread_mutex_lock(&led_mutex);
-//   long ret_freq = led_freq;
-//   pthread_mutex_unlock(&led_mutex);
-//   return ret_freq;
-// }
-
-// void turnon_led(uint8_t on){
-//   if(on){
-//     pthread_mutex_lock(&led_mutex);
-//     /* kh4_SetRGBLeds(rgb_val[0],rgb_val[1],rgb_val[2], // Left
-//                rgb_val[3],rgb_val[4],rgb_val[5], // Right
-//                rgb_val[6],rgb_val[7],rgb_val[8], // Back
-//                DSPIC); */
-//     pthread_mutex_unlock(&led_mutex);
-//   } else {
-//     // kh4_SetRGBLeds(0,0,0,0,0,0,0,0,0,DSPIC);
-//   }
 // }
 
 /****************************************/
