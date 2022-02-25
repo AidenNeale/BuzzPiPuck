@@ -456,7 +456,7 @@ void buzz_script_step() {
       //if(x > MSG_RANGE) { // limit the msg range of the nieghbor
         buzzneighbors_add(VM, PACKETS_FIRST->id, d, a, e);
         uint16_t msgsz;
-        do {
+        while(MSG_SIZE - tot > sizeof(uint16_t) && msgsz > 0) {
            /* Get payload size */
            msgsz = *(uint16_t*)(pl + tot); // Get message size
            tot += sizeof(uint16_t);
@@ -470,7 +470,6 @@ void buzz_script_step() {
               tot += msgsz;
            }
         }
-        while(MSG_SIZE - tot > sizeof(uint16_t) && msgsz > 0);
       //}
 
 
@@ -485,99 +484,98 @@ void buzz_script_step() {
       free(PACKETS_FIRST);
       /* Go to next packet */
       PACKETS_FIRST = n;
-   }
-   /* The packet list is now empty */
-   PACKETS_LAST = NULL;
-   /* Unlock mutex */
-   pthread_mutex_unlock(&INCOMING_PACKET_MUTEX);
-   /* Process messages */
-   buzzvm_process_inmsgs(VM);
-   /*
-    * Update sensors
-    */
-   buzzkh4_abs_position(VM, abs_x, abs_y, abs_theta);
-   POSE[0] = abs_x;
-   POSE[1] = abs_y;
-   POSE[2] = abs_z; //just a dummy value in cm, to be fixed later by assigning actual z value.
-   POSE[3] = abs_theta;
+  }
+  /* The packet list is now empty */
+  PACKETS_LAST = NULL;
+  /* Unlock mutex */
+  pthread_mutex_unlock(&INCOMING_PACKET_MUTEX);
+  /* Process messages */
+  buzzvm_process_inmsgs(VM);
+  /*
+  * Update sensors
+  */
+  buzzkh4_abs_position(VM, abs_x, abs_y, abs_theta);
+  POSE[0] = abs_x;
+  POSE[1] = abs_y;
+  POSE[2] = abs_z; //just a dummy value in cm, to be fixed later by assigning actual z value.
+  POSE[3] = abs_theta;
 
-   /*
-    * Call Buzz step() function
-    */
-   if(buzzvm_function_call(VM, "step", 0) != BUZZVM_STATE_READY) {
-      fprintf(stderr, "%s: execution terminated abnormally: %s\n\n",
-              BO_FNAME,
-              buzz_error_info());
-      buzzvm_dump(VM);
-   }
-   /* Remove useless return value from stack */
-   buzzvm_pop(VM);
-   /*
-    * Broadcast messages
-    */
-   /* Prepare buffer */
-   buzzvm_process_outmsgs(VM);
+  /*
+  * Call Buzz step() function
+  */
+  if(buzzvm_function_call(VM, "step", 0) != BUZZVM_STATE_READY) {
+    fprintf(stderr, "%s: execution terminated abnormally: %s\n\n",
+            BO_FNAME,
+            buzz_error_info());
+    buzzvm_dump(VM);
+  }
+  /* Remove useless return value from stack */
+  buzzvm_pop(VM);
+  /*
+  * Broadcast messages
+  */
+  /* Prepare buffer */
+  buzzvm_process_outmsgs(VM);
 
-   // TODO: this remains
-   memset(STREAM_SEND_BUF, 0, MSG_SIZE);
-   *(uint16_t*)STREAM_SEND_BUF = VM->robot;
-   ssize_t tot = sizeof(uint16_t);
-      /* add local position*/
-   memcpy(STREAM_SEND_BUF + tot, &abs_x, sizeof(float));
-   tot += sizeof(float);
-   memcpy(STREAM_SEND_BUF + tot, &abs_y, sizeof(float));
-   tot += sizeof(float);
-   memcpy(STREAM_SEND_BUF + tot, &abs_z, sizeof(float));
-   tot += sizeof(float);
-   memcpy(STREAM_SEND_BUF + tot, &abs_theta, sizeof(float));
-   tot += sizeof(float);
+  // TODO: this remains
+  memset(STREAM_SEND_BUF, 0, MSG_SIZE);
+  *(uint16_t*)STREAM_SEND_BUF = VM->robot;
+  ssize_t tot = sizeof(uint16_t);
 
-      //fprintf(stdout,"sending neighbors position: %.2f,%.2f,%.2f\n",x,y,t);
-   do {
-      /* Are there more messages? */
-      if(buzzoutmsg_queue_isempty(VM)) break;
-      /* Get first message */
-      buzzmsg_payload_t m = buzzoutmsg_queue_first(VM);
-      /* Make sure it fits the data buffer */
-      if(tot + buzzmsg_payload_size(m) + sizeof(uint16_t)
-         >
-         MSG_SIZE) {
-         buzzmsg_payload_destroy(&m);
-         break;
-      }
-      /* Add message length to data buffer */
-      /* fprintf(stderr, "[DEBUG] send before sz = %u\n", */
-      /*         *(uint16_t*)(STREAM_SEND_BUF + 2)); */
-      *(uint16_t*)(STREAM_SEND_BUF + tot) = (uint16_t)buzzmsg_payload_size(m);
-      tot += sizeof(uint16_t);
-      /* fprintf(stderr, "[DEBUG] send after sz = %u\n", */
-      /*         *(uint16_t*)(STREAM_SEND_BUF + 2)); */
-      /* Add payload to data buffer */
-      memcpy(STREAM_SEND_BUF + tot, m->data, buzzmsg_payload_size(m));
-      tot += buzzmsg_payload_size(m);
-      //fprintf(stderr, "[DEBUG] send before sz = %u\n", *(uint16_t*)(STREAM_SEND_BUF + 2));
-      /* Get rid of message */
-      buzzoutmsg_queue_next(VM);
-      buzzmsg_payload_destroy(&m);
-   } while(1);
+  /* add local position*/
+  memcpy(STREAM_SEND_BUF + tot, &abs_x, sizeof(float));
+  tot += sizeof(float);
+  memcpy(STREAM_SEND_BUF + tot, &abs_y, sizeof(float));
+  tot += sizeof(float);
+  memcpy(STREAM_SEND_BUF + tot, &abs_z, sizeof(float));
+  tot += sizeof(float);
+  memcpy(STREAM_SEND_BUF + tot, &abs_theta, sizeof(float));
+  tot += sizeof(float);
 
-   STREAM_SEND();
-   /* Push the swarm size */
-   buzzvm_pushs(VM, buzzvm_string_register(VM, "ROBOTS",1));
-   buzzvm_pushi(VM, buzzdict_size(VM->swarmmembers)+1);
-   buzzvm_gstore(VM);
+  //fprintf(stdout,"sending neighbors position: %.2f,%.2f,%.2f\n",x,y,t);
+  while(1) {
+    /* Are there more messages? */
+    if(buzzoutmsg_queue_isempty(VM)) break;
+    /* Get first message */
+    buzzmsg_payload_t m = buzzoutmsg_queue_first(VM);
+    /* Make sure it fits the data buffer */
+    if(tot + buzzmsg_payload_size(m) + sizeof(uint16_t) > MSG_SIZE) {
+        buzzmsg_payload_destroy(&m);
+        break;
+    }
+    /* Add message length to data buffer */
+    /* fprintf(stderr, "[DEBUG] send before sz = %u\n", */
+    /*         *(uint16_t*)(STREAM_SEND_BUF + 2)); */
+    *(uint16_t*)(STREAM_SEND_BUF + tot) = (uint16_t)buzzmsg_payload_size(m);
+    tot += sizeof(uint16_t);
+    /* fprintf(stderr, "[DEBUG] send after sz = %u\n", */
+    /*         *(uint16_t*)(STREAM_SEND_BUF + 2)); */
+    /* Add payload to data buffer */
+    memcpy(STREAM_SEND_BUF + tot, m->data, buzzmsg_payload_size(m));
+    tot += buzzmsg_payload_size(m);
+    //fprintf(stderr, "[DEBUG] send before sz = %u\n", *(uint16_t*)(STREAM_SEND_BUF + 2));
+    /* Get rid of message */
+    buzzoutmsg_queue_next(VM);
+    buzzmsg_payload_destroy(&m);
+  };
 
-   /* Print swarm
-   buzzswarm_members_print(stdout, VM->swarmmembers, VM->robot);*/
-   /* Check swarm state
-   int status = 1;
-   buzzdict_foreach(VM->swarmmembers, check_swarm_members, &status);
-   if(status == 1 &&
-      buzzdict_size(VM->swarmmembers) < 9)
-      status = 2;
-   buzzvm_pushs(VM, buzzvm_string_register(VM, "swarm_status", 1));
-   buzzvm_pushi(VM, status);
-   buzzvm_gstore(VM);*/
+  STREAM_SEND();
+  /* Push the swarm size */
+  buzzvm_pushs(VM, buzzvm_string_register(VM, "ROBOTS",1));
+  buzzvm_pushi(VM, buzzdict_size(VM->swarmmembers)+1);
+  buzzvm_gstore(VM);
+
+  /* Print swarm
+  buzzswarm_members_print(stdout, VM->swarmmembers, VM->robot);*/
+  /* Check swarm state
+  int status = 1;
+  buzzdict_foreach(VM->swarmmembers, check_swarm_members, &status);
+  if(status == 1 &&
+    buzzdict_size(VM->swarmmembers) < 9)
+    status = 2;
+  buzzvm_pushs(VM, buzzvm_string_register(VM, "swarm_status", 1));
+  buzzvm_pushi(VM, status);
+  buzzvm_gstore(VM);*/
 }
 
 /****************************************/
