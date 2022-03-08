@@ -61,9 +61,8 @@ int main(int argc, char** argv) {
   if(argc >= 6)
     RID = strtol(argv[5], &endptr, 10);
 
-  // SERVER
-  SERVER_ADDR = "127.0.0.1"; // Default Server Address
-  // SERVER_ADDR = "192.168.2.101";
+  // SERVER: This is the IP Address of the server in which communication occurs
+  SERVER_ADDR = "144.32.175.138"; // Default Server Address
   if(argc >= 7)
     SERVER_ADDR = argv[6];
 
