@@ -18,7 +18,7 @@
 // to the FC to pursue position or velocity*/
 
 float POSE[4] = {10,25,39,40};                  //position: x,y,z and Yaw wrt mocap frame
-// static pthread_mutex_t LOCK_CMDS;
+int DONE = 0;
 
 // /*this function keeps sending command messages and
 // collects needed information all the time, or else fc
