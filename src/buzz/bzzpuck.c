@@ -16,7 +16,7 @@ void usage(const char* path, int status) {
    fprintf(stderr, "Usage:\n");
    fprintf(stderr, "\t%s <stream> <msg_size> <file.bo> <file.bdb>\n\n", path);
    fprintf(stderr, "== Options ==\n\n");
-   fprintf(stderr, "  stream        The stream type: tcp or bt\n");
+   fprintf(stderr, "  stream        The stream type: UDP or bt\n");
    fprintf(stderr, "  msg_size      The message size in bytes\n");
    fprintf(stderr, "  file.bo       The Buzz bytecode file\n");
    fprintf(stderr, "  file.bdbg     The Buzz debug file\n");
@@ -37,8 +37,8 @@ int main(int argc, char** argv) {
 
   /* The stream type */
   char* stream = argv[1];
-  if(strcmp(stream, "tcp") != 0 &&
-    strcmp(stream, "bt") != 0) {
+  if(strcasecmp(stream, "udp") != 0 &&
+    strcasecmp(stream, "bt") != 0) {
     fprintf(stderr, "%s: unknown stream type '%s'\n", argv[0], stream);
     usage(argv[0], 0);
   }
@@ -80,9 +80,9 @@ int main(int argc, char** argv) {
   char* dbgfname = argv[4];
 
   /* Wait for connection */
-  /* this function invokes the buzz_listen_tcp() in case
-  of using tcp stream, which creates a thread that runs the
-  function called buzz_stream_incoming_thread_tcp()*/
+  /* this function invokes the buzz_listen_UDP() in case
+  of using UDP stream, which creates a thread that runs the
+  function called buzz_stream_incoming_thread_UDP()*/
   if(!buzz_listen(stream, msg_sz)) {
     return 1;
   }

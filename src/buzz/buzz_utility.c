@@ -25,13 +25,13 @@ static char*       BO_FNAME        = 0;
 static uint8_t*    BO_BUF          = 0;
 static buzzdebug_t DBG_INFO        = 0;
 static int         MSG_SIZE        = -1;
-static int         TCP_LIST_STREAM = -1;
-static int         TCP_COMM_STREAM = -1;
+static int         UDP_LIST_STREAM = -1;
+static int         UDP_COMM_STREAM = -1;
 static uint8_t*    STREAM_SEND_BUF = NULL;
 static int         blob_pos[4];
 static int         enable_cam=0;
 static int         MSG_RANGE = 1.0;  //Max accepted range for msgs (m)
-static char        TCP_LIST_STREAM_PORT[10];
+static char        UDP_LIST_STREAM_PORT[10];
 
 // absolute positioning
 float abs_x = 0.0, abs_y = 0.0, abs_z = 0.0, abs_theta = 0.0;
@@ -106,7 +106,7 @@ void incoming_packet_add(uint16_t id, const uint8_t* pl) {
 /****************************************/
 /****************************************/
 /*this function works forever in its own thread*/
-void* buzz_stream_incoming_thread_tcp(void* args) {
+void* buzz_stream_incoming_thread_UDP(void* args) {
    /* Create buffer for message */
    uint8_t* buf = calloc(MSG_SIZE, 1);
    /* Tot bytes left to receive, received up to now, and received at a
@@ -117,7 +117,7 @@ void* buzz_stream_incoming_thread_tcp(void* args) {
       left = MSG_SIZE;
       tot = 0;
       while(left > 0) {
-         cur = recv(TCP_COMM_STREAM, buf + tot, left, 0);
+         cur = recv(UDP_COMM_STREAM, buf + tot, left, 0);
          if(cur < 0) {
             fprintf(stderr, "Error receiving data: %s\n", strerror(errno));
             free(buf);
@@ -137,7 +137,7 @@ void* buzz_stream_incoming_thread_tcp(void* args) {
    }
 }
 
-void buzz_stream_send_tcp() {
+void buzz_stream_send_UDP() {
    /* Tot bytes left to send, sent up to now, and sent at a specific
     * call of send() */
    ssize_t left, tot, cur;
@@ -145,7 +145,7 @@ void buzz_stream_send_tcp() {
    left = MSG_SIZE;
    tot = 0;
    while(left > 0) {
-     cur = sendto(TCP_COMM_STREAM, STREAM_SEND_BUF + tot, left, 0,  (struct sockaddr *)&server, sizeof(server));
+     cur = sendto(UDP_COMM_STREAM, STREAM_SEND_BUF + tot, left, 0,  (struct sockaddr *)&server, sizeof(server));
       if(cur < 0) {
          fprintf(stderr, "Error receiving data: %s\n", strerror(errno));
          exit(1);
@@ -162,14 +162,14 @@ void buzz_stream_send_tcp() {
 /****************************************/
 /****************************************/
 
-int buzz_listen_tcp() {
+int buzz_listen_UDP() {
 
    /* Set up the server name */
    server.sin_family      = AF_INET;                /* Internet Domain    */
    server.sin_port        = htons(4242);            /* Server Port        */
    server.sin_addr.s_addr = inet_addr(SERVER_ADDR); /* Server's Address   */
 
-   sprintf(TCP_LIST_STREAM_PORT, "%d", 24580 + ROBOT_ID) ;
+   sprintf(UDP_LIST_STREAM_PORT, "%d", 24580 + ROBOT_ID) ;
 
    /* Used to store the return value of the network function calls */
    int retval;
@@ -177,10 +177,10 @@ int buzz_listen_tcp() {
    struct addrinfo hints, *ifaceinfo;
    memset(&hints, 0, sizeof(hints));
    hints.ai_family = AF_INET;       /* Only IPv4 is accepted */
-   hints.ai_socktype = SOCK_DGRAM;  /* TCP socket */
+   hints.ai_socktype = SOCK_DGRAM;  /* UDP socket */
    hints.ai_flags = AI_PASSIVE;     /* Necessary for bind() later on */
    retval = getaddrinfo(NULL,
-                        TCP_LIST_STREAM_PORT,
+                        UDP_LIST_STREAM_PORT,
                         &hints,
                         &ifaceinfo);
    if(retval != 0) {
@@ -189,44 +189,44 @@ int buzz_listen_tcp() {
       return 0;
    }
    /* Bind on the first interface available */
-   TCP_COMM_STREAM = -1;
+   UDP_COMM_STREAM = -1;
    struct addrinfo* iface = NULL;
    for(iface = ifaceinfo;
-       (iface != NULL) && (TCP_LIST_STREAM == -1);
+       (iface != NULL) && (UDP_LIST_STREAM == -1);
        iface = iface->ai_next) {
-      TCP_COMM_STREAM = socket(iface->ai_family,
+      UDP_COMM_STREAM = socket(iface->ai_family,
                                iface->ai_socktype,
                                iface->ai_protocol);
-      if(TCP_COMM_STREAM > 0) {
+      if(UDP_COMM_STREAM > 0) {
          int True = 1;
-         if((setsockopt(TCP_COMM_STREAM,
+         if((setsockopt(UDP_COMM_STREAM,
                         SOL_SOCKET,
                         SO_REUSEADDR,
                         &True,
                         sizeof(True)) != -1)
             &&
-            (bind(TCP_COMM_STREAM,
+            (bind(UDP_COMM_STREAM,
                   iface->ai_addr,
                   iface->ai_addrlen) == -1)) {
-            close(TCP_LIST_STREAM);
-            TCP_COMM_STREAM = -1;
+            close(UDP_LIST_STREAM);
+            UDP_COMM_STREAM = -1;
          }
       }
    }
    freeaddrinfo(ifaceinfo);
-   if(TCP_COMM_STREAM == -1) {
+   if(UDP_COMM_STREAM == -1) {
       fprintf(stderr, "Can't bind socket to any interface\n");
       return 0;
    }
    /* Listen on the socket */
-   fprintf(stdout, "Listening on port %s...\n",TCP_LIST_STREAM_PORT);
-   /* Ready to communicate through TCP */
-   STREAM_SEND = buzz_stream_send_tcp;
+   fprintf(stdout, "Listening on port %s...\n",UDP_LIST_STREAM_PORT);
+   /* Ready to communicate through UDP */
+   STREAM_SEND = buzz_stream_send_UDP;
    STREAM_SEND_BUF = (uint8_t*)malloc(MSG_SIZE);
-   if(pthread_create(&INCOMING_MSG_THREAD, NULL, &buzz_stream_incoming_thread_tcp, NULL) != 0) {
+   if(pthread_create(&INCOMING_MSG_THREAD, NULL, &buzz_stream_incoming_thread_UDP, NULL) != 0) {
       fprintf(stderr, "Can't create thread: %s\n", strerror(errno));
-      close(TCP_COMM_STREAM);
-      TCP_COMM_STREAM = -1;
+      close(UDP_COMM_STREAM);
+      UDP_COMM_STREAM = -1;
       return 0;
    }
    return 1;
@@ -247,8 +247,8 @@ int buzz_listen(const char* type, int msg_size) {
       return 0;
    }
    /* Listen to connections */
-   if(strcmp(type, "tcp") == 0)
-      return buzz_listen_tcp();
+   if(strcmp(type, "UDP") == 0)
+      return buzz_listen_UDP();
    else if(strcmp(type, "bt") == 0) //This does nothing useful
       return buzz_listen_bt();
    return 0;
