@@ -247,9 +247,9 @@ int buzz_listen(const char* type, int msg_size) {
       return 0;
    }
    /* Listen to connections */
-   if(strcmp(type, "UDP") == 0)
+   if(strcasecmp(type, "UDP") == 0)
       return buzz_listen_UDP();
-   else if(strcmp(type, "bt") == 0) //This does nothing useful
+   else if(strcasecmp(type, "bt") == 0) //This does nothing useful
       return buzz_listen_bt();
    return 0;
 }
