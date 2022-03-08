@@ -426,51 +426,52 @@ void check_swarm_members(const void* key, void* data, void* params) {
 }
 
 void buzz_script_step() {
-   /*
-    * Process incoming messages
-    */
-   /* Reset neighbor information */
-   buzzneighbors_reset(VM);
-   /* Lock mutex */
-   pthread_mutex_lock(&INCOMING_PACKET_MUTEX);
-   /* Go through messages and add them to the FIFO */
-   struct incoming_packet_s* n;
+  /*
+  * Process incoming messages
+  */
 
-   while(PACKETS_FIRST) {
-      /* Save next packet */
-      n = PACKETS_FIRST->next;
-      /* Update Buzz neighbors information */
-      uint8_t* pl = (uint8_t*)PACKETS_FIRST->payload;
-      float d=0.0,a=0.0,e=0.0;
-      size_t tot = 0;
-      memcpy(&d, pl+tot, sizeof(float));
-      tot += sizeof(float);
-      memcpy(&a, pl+tot, sizeof(float));
-      tot += sizeof(float);
-      memcpy(&e, pl+tot, sizeof(float));
-      tot += sizeof(float);
+  /* Reset neighbor information */
+  buzzneighbors_reset(VM);
+  /* Lock mutex */
+  pthread_mutex_lock(&INCOMING_PACKET_MUTEX);
+  /* Go through messages and add them to the FIFO */
+  struct incoming_packet_s* n;
 
-      // Skip the orientation
-      tot += sizeof(float);
+  while(PACKETS_FIRST) {
+    /* Save next packet */
+    n = PACKETS_FIRST->next;
+    /* Update Buzz neighbors information */
+    uint8_t* pl = (uint8_t*)PACKETS_FIRST->payload;
+    float distance=0.0, azimuth=0.0, elevation=0.0;
+    size_t tot = 0; // Top of Tree
+    memcpy(&distance, pl+tot, sizeof(float));
+    tot += sizeof(float);
+    memcpy(&azimuth, pl+tot, sizeof(float));
+    tot += sizeof(float);
+    memcpy(&elevation, pl+tot, sizeof(float));
+    tot += sizeof(float);
 
-      //if(x > MSG_RANGE) { // limit the msg range of the nieghbor
-        buzzneighbors_add(VM, PACKETS_FIRST->id, d, a, e);
-        uint16_t msgsz;
-        while(MSG_SIZE - tot > sizeof(uint16_t) && msgsz > 0) {
-           /* Get payload size */
-           msgsz = *(uint16_t*)(pl + tot); // Get message size
-           tot += sizeof(uint16_t);
-           /* Make sure the message payload can be read */
-           if(msgsz > 0 && msgsz <= MSG_SIZE - tot) {
-              /* Append message to the Buzz input message queue */
-              buzzinmsg_queue_append(
-                 VM,
-                 PACKETS_FIRST->id,
-                 buzzmsg_payload_frombuffer(pl + tot, msgsz));
-              tot += msgsz;
-           }
+    // Skip the orientation
+    tot += sizeof(float);
+
+    //if(x > MSG_RANGE) { // limit the msg range of the nieghbor
+      buzzneighbors_add(VM, PACKETS_FIRST->id, distance, azimuth, elevation);
+      uint16_t msgsz;
+      while(MSG_SIZE - tot > sizeof(uint16_t) && msgsz > 0) {
+        /* Get payload size */
+        msgsz = *(uint16_t*)(pl + tot); // Get message size
+        tot += sizeof(uint16_t);
+        /* Make sure the message payload can be read */
+        if(msgsz > 0 && msgsz <= MSG_SIZE - tot) {
+          /* Append message to the Buzz input message queue */
+          buzzinmsg_queue_append(
+              VM,
+              PACKETS_FIRST->id,
+              buzzmsg_payload_frombuffer(pl + tot, msgsz));
+          tot += msgsz;
         }
-      //}
+      }
+    //}
 
       /**pretty sure that the loop above can be replaced by:
       buzzinmsg_queue_append(
@@ -479,11 +480,11 @@ void buzz_script_step() {
          buzzmsg_payload_frombuffer(pl + tot, (MSG_SIZE - tot)));
       */
 
-      /* Erase packet */
-      free(PACKETS_FIRST->payload);
-      free(PACKETS_FIRST);
-      /* Go to next packet */
-      PACKETS_FIRST = n;
+    /* Erase packet */
+    free(PACKETS_FIRST->payload);
+    free(PACKETS_FIRST);
+    /* Go to next packet */
+    PACKETS_FIRST = n;
   }
   /* The packet list is now empty */
   PACKETS_LAST = NULL;
@@ -532,7 +533,6 @@ void buzz_script_step() {
   memcpy(STREAM_SEND_BUF + tot, &abs_theta, sizeof(float));
   tot += sizeof(float);
 
-  //fprintf(stdout,"sending neighbors position: %.2f,%.2f,%.2f\n",x,y,t);
   while(1) {
     /* Are there more messages? */
     if(buzzoutmsg_queue_isempty(VM)) break;
