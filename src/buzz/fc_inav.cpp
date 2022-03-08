@@ -12,32 +12,15 @@
 // {
 // #endif
 
-// /*the variables POSE and CMDS are being manipulated either by 
+// /*the variables POSE and CMDS are being manipulated either by
 // user input functions or otherwise, then CMDS is being used to
-// set the RC commands and POSE is being used to send positions 
+// set the RC commands and POSE is being used to send positions
 // to the FC to pursue position or velocity*/
 
-float CMDS[6] = {1500,1500,900,1500,1000,1900}; //Roll, Pitch, Thrust, Yaw, Aux1, Aux2
 float POSE[4] = {10,25,39,40};                  //position: x,y,z and Yaw wrt mocap frame
-float old_pose[4] = {0,0,0,0};
-float DESIRED[4] = {0,0,0};                   //flag (0: poshold or 1:pos track or 2: vel track), x_des, y_des, z_des
-float POS_ROT[4] = {10,25,39,40};
-uint16_t DESIRED_LIST[7] = {0,0,0,0,1,1,1};
-int fc_mode = 0; //0: just hover, 1: track position, 2: track speed
-float fc_voltage = 0;
-bool reset_flag = false;
-bool mocap_active = false;
-bool control_yaw_active = false;
-int desired_vector_mode = 0;
-float desired_yaw = 0;
-int takeoff_thrust = 1420;
-int DONE = 0;
-int invalid_mocap_couter = 0;
-bool invalid_mocap_flag = false;
-static pthread_t FC_THREAD;
 // static pthread_mutex_t LOCK_CMDS;
 
-// /*this function keeps sending command messages and 
+// /*this function keeps sending command messages and
 // collects needed information all the time, or else fc
 // goes to failsafe mode and freezes*/
 // void* fc_main_thread(void* args)
@@ -47,7 +30,7 @@ static pthread_t FC_THREAD;
 //     std::vector<uint16_t> desired_vec(7, 1);
 
 //     // std::vector<uint16_t> cmds(6, 1500);
-//     msp::client::Client client;    
+//     msp::client::Client client;
 //     client.setLoggingLevel(msp::client::LoggingLevel::SILENT);
 //     client.setVariant(msp::FirmwareVariant::INAV);
 //     client.Start(SERIAL_DEVICE, BAUDRATE);
@@ -64,7 +47,7 @@ static pthread_t FC_THREAD;
 
 //     /*setting up messages we need*/
 //     msp::msg::Debug debug(fw_variant);    //for debug messages in case we need them
-//     msp::msg::SetMocap mocap(fw_variant); //for sending the mocap data to fc 
+//     msp::msg::SetMocap mocap(fw_variant); //for sending the mocap data to fc
 //     // msp::msg::Analog analog(fw_variant);  //for voltage reading
 //     msp::msg::SetRawRc rc(fw_variant);    //for sending commands to fc
 //     msp::msg::SetDesVec desired_vector(fw_variant); //for sending desired position or velocity
@@ -82,7 +65,7 @@ static pthread_t FC_THREAD;
 //     gettimeofday(&last_sens_tmr,0);
 //     gettimeofday(&last_mocap_tmr,0);
 //     gettimeofday(&last_desVec_tmr,0);
-    
+
 //     long sec,usec;
 
 //     /*this loop goes on forever in an independent thread*/
@@ -102,7 +85,7 @@ static pthread_t FC_THREAD;
 //                 mocap_data[i] = POS_ROT[i-1]*100;
 //             }
 //         }
-        
+
 //         //check if we have received an order to reset
 //         if(reset_flag)
 //         {
@@ -113,7 +96,7 @@ static pthread_t FC_THREAD;
 //             // client.start(SERIAL_DEVICE, BAUDRATE);
 //             reset_flag = false;
 //         }
-        
+
 //         gettimeofday(&current_time, 0);
 //         long DT = current_time.tv_sec - begin.tv_sec;
 //         // printf("her we go...\n");
@@ -167,7 +150,7 @@ static pthread_t FC_THREAD;
 //             reb = client.sendData(rc.id(),rc.encode());
 //             if(reb){}
 //         }
-        
+
 //         /* Sending mocap value messages*/
 //         sec = current_time.tv_sec - last_mocap_tmr.tv_sec;
 //         usec = current_time.tv_usec - last_mocap_tmr.tv_usec; //this time is micro seconds
@@ -215,20 +198,20 @@ static pthread_t FC_THREAD;
 //             // printf("POSE X:%0.2f\tY:%0.2f\tTheta:%0.2f\n",POSE[0],POSE[1],POSE[3]);
 //             // if(client.sendMessage(analog) == 1){
 //             //     fc_voltage = analog.vbat;
-//             //     // std::cout << "time: " << DT << "  voltage is  "<<analog.vbat<<std::endl;  
+//             //     // std::cout << "time: " << DT << "  voltage is  "<<analog.vbat<<std::endl;
 //             // }
 
 //             if(client.sendMessage(cognifly_analog) == 1){
 //                 fc_voltage = cognifly_analog.vbat;
-//                 // std::cout << "time: " << DT << "  voltage is  "<<cognifly_analog.vbat<<std::endl;  
+//                 // std::cout << "time: " << DT << "  voltage is  "<<cognifly_analog.vbat<<std::endl;
 //             }
-            
+
 //             if(client.sendMessage(debug) == 1) {
 //                 // std::cout<<"mocap data to be sent "<<mocap_data[1]<<"  "<<mocap_data[2]<<"  "<<mocap_data[3]<<"   "<<mocap_data[4]<<std::endl;
 //                 std::cout << "#Debug message:" << std::endl;
-//                 std::cout << debug.debug1 << " , " << 
-//                              debug.debug2 << " , " << 
-//                              debug.debug3 << " , " << 
+//                 std::cout << debug.debug1 << " , " <<
+//                              debug.debug2 << " , " <<
+//                              debug.debug3 << " , " <<
 //                              debug.debug4 << std::endl;
 //             }
 //             else printf("no debug!");
@@ -386,7 +369,7 @@ static pthread_t FC_THREAD;
 //     DESIRED[2]=buzzvm_stack_at(vm, 1)->f.value; //z_desired
 
 //     return buzzvm_ret0(vm);
-// }            
+// }
 
 // int fc_track_vel(buzzvm_t vm)
 // {
@@ -453,14 +436,14 @@ static pthread_t FC_THREAD;
 //     }
 // }
 
-// // just a note for future reference: if you forget to put 
-// //"return buzzvm_ret0(vm)", the function will act weirdly if 
-// //it is being called (like a funtion calls itself more than 
+// // just a note for future reference: if you forget to put
+// //"return buzzvm_ret0(vm)", the function will act weirdly if
+// //it is being called (like a funtion calls itself more than
 // // once when it was supposed to be called once, stuff like that)
 
 
 // void rotate_pose()
-// {   
+// {
 //     float phi = PI;
 //     float theta = 0;
 //     float psi = -POSE[3]; //which is the negative of the yaw angle in radians
