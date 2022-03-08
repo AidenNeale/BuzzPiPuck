@@ -58,18 +58,21 @@ int main(int argc, char** argv) {
 
   // ROBOT ID
   int RID = 0;
-  if(argc >= 6)
+  if(argc >= 6) {
     RID = strtol(argv[5], &endptr, 10);
+  }
 
   // SERVER: This is the IP Address of the server in which communication occurs
   SERVER_ADDR = "144.32.175.138"; // Default Server Address
-  if(argc >= 7)
+  if(argc >= 7) {
     SERVER_ADDR = argv[6];
+  }
 
   // frequency
   FREQUENCY = 100000;
-  if(argc == 8)
+  if(argc == 8) {
     FREQUENCY = 1000000 / strtol(argv[7], &endptr, 10);
+  }
 
   /* The bytecode filename */
   char* bcfname = argv[3];
@@ -80,7 +83,9 @@ int main(int argc, char** argv) {
   /* this function invokes the buzz_listen_tcp() in case
   of using tcp stream, which creates a thread that runs the
   function called buzz_stream_incoming_thread_tcp()*/
-  if(!buzz_listen(stream, msg_sz)) return 1;
+  if(!buzz_listen(stream, msg_sz)) {
+    return 1;
+  }
 
   /* Set CTRL-C handler */
   signal(SIGTERM, ctrlc_handler);
@@ -99,9 +104,10 @@ int main(int argc, char** argv) {
       if(sleepTime>0){
         usleep(sleepTime);
       }
+    }
     /* Cleanup */
     buzz_script_destroy();
-   }
-   /* All done */
-   return 0;
+  }
+  /* All done */
+  return 0;
 }
