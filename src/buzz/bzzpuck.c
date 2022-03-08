@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
       fprintf(stderr, "%s: unknown stream type '%s'\n", argv[0], stream);
       usage(argv[0], 0);
    }
-   /* The message size */
+   /* The message size for robot message sending */
    char* endptr;
    int msg_sz = strtol(argv[2], &endptr, 10);
    if(endptr == argv[2] || *endptr != '\0') {
