@@ -249,7 +249,7 @@ int buzz_listen(const char* type, int msg_size) {
    /* Listen to connections */
    if(strcmp(type, "tcp") == 0)
       return buzz_listen_tcp();
-   else if(strcmp(type, "bt") == 0)
+   else if(strcmp(type, "bt") == 0) //This does nothing useful
       return buzz_listen_bt();
    return 0;
 }
@@ -472,13 +472,13 @@ void buzz_script_step() {
         }
       //}
 
-
       /**pretty sure that the loop above can be replaced by:
       buzzinmsg_queue_append(
          VM,
          PACKETS_FIRST->id,
          buzzmsg_payload_frombuffer(pl + tot, (MSG_SIZE - tot)));
       */
+
       /* Erase packet */
       free(PACKETS_FIRST->payload);
       free(PACKETS_FIRST);
