@@ -79,11 +79,12 @@ int main(int argc, char** argv) {
   /* The debugging information file name */
   char* dbgfname = argv[4];
 
+
   /* Wait for connection */
   /* this function invokes the buzz_listen_UDP() in case
   of using UDP stream, which creates a thread that runs the
   function called buzz_stream_incoming_thread_UDP()*/
-  if(!buzz_listen(stream, msg_sz)) {
+  if(!buzz_listen(stream, msg_sz, RID)) {
     return 1;
   }
 

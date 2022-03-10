@@ -238,9 +238,11 @@ int buzz_listen_bt() {
    return 0;
 }
 
-int buzz_listen(const char* type, int msg_size) {
+int buzz_listen(const char* type, int msg_size, int RID) {
    /* Set the message size */
    MSG_SIZE = msg_size;
+   /* Sets the Robot ID */
+   ROBOT_ID = RID;
    /* Create the mutex */
    if(pthread_mutex_init(&INCOMING_PACKET_MUTEX, NULL) != 0) {
       fprintf(stderr, "Error initializing the incoming packet mutex: %s\n",
