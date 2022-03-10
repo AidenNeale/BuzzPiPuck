@@ -533,6 +533,8 @@ void buzz_script_step() {
   memcpy(STREAM_SEND_BUF + tot, &abs_theta, sizeof(float));
   tot += sizeof(float);
 
+  printf("Robot ID: %d at position: x: %f, y: %f, z: %f\n", ROBOT_ID, abs_x, abs_y, abs_z);
+
   while(1) {
     /* Are there more messages? */
     if(buzzoutmsg_queue_isempty(VM)) break;
