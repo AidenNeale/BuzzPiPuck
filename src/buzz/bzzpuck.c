@@ -79,6 +79,8 @@ int main(int argc, char** argv) {
   /* The debugging information file name */
   char* dbgfname = argv[4];
 
+  /* Initialise I2C Setup for use in register hooks*/
+  pipuck_setup();
 
   /* Wait for connection */
   /* this function invokes the buzz_listen_UDP() in case
@@ -108,6 +110,7 @@ int main(int argc, char** argv) {
     }
     /* Cleanup */
     buzz_script_destroy();
+    pipuck_done();
   }
   /* All done */
   return 0;
