@@ -40,7 +40,7 @@ const int IR7_AMBIENT = 22;
 
 I2CDevice I2CStruct;
 
-void initialise(void)
+void i2c_initialise(void)
 {
   memset(&I2CStruct, 0, (sizeof(&I2CStruct)/sizeof(I2CStruct)));
 
@@ -55,9 +55,9 @@ void initialise(void)
 
 }
 
-void _cleanUp(I2CDevice* I2CStruct)
+void i2c_destroy()
 {
-  i2c_close(*(&I2CStruct->bus));
+  i2c_close((&I2CStruct)->bus);
 }
 
 void write_data_8(unsigned int address, u_int8_t passedData)
@@ -67,7 +67,7 @@ void write_data_8(unsigned int address, u_int8_t passedData)
 
   i2c_write(&I2CStruct, address, &passedData, 1U);
 
-  _cleanUp(&I2CStruct);
+  // _cleanUp(&I2CStruct);
 }
 
 
@@ -78,7 +78,7 @@ void write_data_16(unsigned int address, u_int16_t passedData)
 
   i2c_write(&I2CStruct, address, &passedData, 2U);
 
-  _cleanUp(&I2CStruct);
+  // _cleanUp(&I2CStruct);
 }
 
 
@@ -87,7 +87,7 @@ void read_data_8(unsigned int address, uint8_t* data)
   // I2CDevice I2CStruct;
   // initialise(&I2CStruct);
   i2c_read(&I2CStruct, address, data, 1U);
-  _cleanUp(&I2CStruct);
+  // _cleanUp(&I2CStruct);
 }
 
 
@@ -96,7 +96,7 @@ void read_data_16(unsigned int address, uint16_t* data)
   // I2CDevice I2CStruct;
   // initialise(&I2CStruct);
   i2c_read(&I2CStruct, address, data, 2U);
-  _cleanUp(&I2CStruct);
+  // _cleanUp(&I2CStruct);
 }
 
 void set_outer_leds_byte(int leds)
