@@ -72,7 +72,6 @@ void incoming_packet_add(uint16_t id, const uint8_t* pl) {
   // check if the packet is from the current robot
   // if so, extract the absolute position data, and drop the package
   if(id == ROBOT_ID){
-    printf("I am receiving my own robot thing");
     int offset = 0;
     memcpy(&abs_x, pl + offset, sizeof(float));
     offset += sizeof(float);
@@ -536,7 +535,7 @@ void buzz_script_step() {
   memcpy(STREAM_SEND_BUF + tot, &abs_theta, sizeof(float));
   tot += sizeof(float);
 
-  printf("Robot ID: %d at position: x: %f, y: %f, z: %f\n", ROBOT_ID, abs_x, abs_y, abs_z);
+  printf("Robot ID: %d at position: x: %f, y: %f, z: %f, theta: %f\n\r", ROBOT_ID, abs_x, abs_y, abs_z, abs_theta);
 
   while(1) {
     /* Are there more messages? */
