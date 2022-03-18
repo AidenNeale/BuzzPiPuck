@@ -38,19 +38,20 @@ const int IR5_AMBIENT = 20;
 const int IR6_AMBIENT = 21;
 const int IR7_AMBIENT = 22;
 
+static I2CDevice I2CStruct;
 
-void initialise(I2CDevice * I2CStruct)
+void initialise(void)
 {
-  memset(I2CStruct, 0, (sizeof(&I2CStruct)/sizeof(I2CStruct)));
+  memset(&I2CStruct, 0, (sizeof(&I2CStruct)/sizeof(I2CStruct)));
 
-  if ((I2CStruct->bus = i2c_open("/dev/i2c-4")) == -1)
+  if (((&I2CStruct)->bus = i2c_open("/dev/i2c-4")) == -1)
   {
     printf("I2C Open returns -1");
   }
 
-  I2CStruct->addr = EPUCK_I2C_ADDR;
-  I2CStruct->iaddr_bytes = 1;	/* Device internal address is 1 byte */
-  I2CStruct->page_bytes = 16; /* Device are capable of 16 bytes per page */
+  (&I2CStruct)->addr = EPUCK_I2C_ADDR;
+  (&I2CStruct)->iaddr_bytes = 1;	/* Device internal address is 1 byte */
+  (&I2CStruct)->page_bytes = 16; /* Device are capable of 16 bytes per page */
 
 }
 
@@ -61,8 +62,8 @@ void _cleanUp(I2CDevice* I2CStruct)
 
 void write_data_8(unsigned int address, u_int8_t passedData)
 {
-  I2CDevice I2CStruct;
-  initialise(&I2CStruct);
+  // I2CDevice I2CStruct;
+  // initialise(&I2CStruct);
 
   i2c_write(&I2CStruct, address, &passedData, 1U);
 
@@ -72,8 +73,8 @@ void write_data_8(unsigned int address, u_int8_t passedData)
 
 void write_data_16(unsigned int address, u_int16_t passedData)
 {
-  I2CDevice I2CStruct;
-  initialise(&I2CStruct);
+  // I2CDevice I2CStruct;
+  // initialise(&I2CStruct);
 
   i2c_write(&I2CStruct, address, &passedData, 2U);
 
@@ -83,8 +84,8 @@ void write_data_16(unsigned int address, u_int16_t passedData)
 
 void read_data_8(unsigned int address, uint8_t* data)
 {
-  I2CDevice I2CStruct;
-  initialise(&I2CStruct);
+  // I2CDevice I2CStruct;
+  // initialise(&I2CStruct);
   i2c_read(&I2CStruct, address, data, 1U);
   _cleanUp(&I2CStruct);
 }
@@ -92,8 +93,8 @@ void read_data_8(unsigned int address, uint8_t* data)
 
 void read_data_16(unsigned int address, uint16_t* data)
 {
-  I2CDevice I2CStruct;
-  initialise(&I2CStruct);
+  // I2CDevice I2CStruct;
+  // initialise(&I2CStruct);
   i2c_read(&I2CStruct, address, data, 2U);
   _cleanUp(&I2CStruct);
 }
@@ -139,7 +140,7 @@ void set_outer_leds(bool led0, bool led1, bool led2, bool led3, bool led4, bool 
   {
     data += 0x80;
   }
-  
+
   set_outer_leds_byte(data);
 }
 

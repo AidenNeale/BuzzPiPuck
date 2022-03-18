@@ -20,7 +20,7 @@
 
 
 
-void initialise(I2CDevice* );
+void initialise(void);
 void _cleanUp(I2CDevice*);
 
 void write_data_8(unsigned int, u_int8_t);
