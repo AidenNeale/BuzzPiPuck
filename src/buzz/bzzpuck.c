@@ -10,8 +10,17 @@
 
 static int done = 0;
 int DONE = 0;
+
 /*
- * Print usage information
+ * Function: usage
+ * ----------------------
+ * Outputs correct argument parser format to terminal
+ *
+ * Parameters:
+ * --------------------
+ * -> path:
+ * -> status:
+
  */
 void usage(const char* path, int status) {
    fprintf(stderr, "Usage:\n");
@@ -27,11 +36,32 @@ void usage(const char* path, int status) {
    exit(status);
 }
 
+
+/*
+ * Function: ctrlc_handler
+ * ----------------------
+ * Halts loose threads and while loops when handler is triggered
+ *
+ * Parameters:
+ * --------------------
+ * -> sig: Signal type of the exception: E.G. 15 = Sigterm
+ */
 static void ctrlc_handler(int sig) {
    done = 1;
    DONE = 1;
 }
 
+
+/*
+ * Function: main
+ * ----------------------
+ * Entry Point to the Interpreter
+ *
+ * Parameters:
+ * --------------------
+ * -> argc: The number of arguments passed into the program
+ * -> argv: Argument Vector (Array) storing passed arguments
+ */
 int main(int argc, char** argv) {
   /* Parse command line */
   if(argc < 5) usage(argv[0], 0);
