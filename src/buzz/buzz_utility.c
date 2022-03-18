@@ -453,6 +453,8 @@ void buzz_script_step() {
     memcpy(&elevation, pl+tot, sizeof(float));
     tot += sizeof(float);
 
+    printf("Distance: %f, Azimuth: %f, Elevation: %f", distance, azimuth, elevation);
+
     // Skip the orientation
     tot += sizeof(float);
 
