@@ -38,7 +38,7 @@ const int IR5_AMBIENT = 20;
 const int IR6_AMBIENT = 21;
 const int IR7_AMBIENT = 22;
 
-static I2CDevice I2CStruct;
+I2CDevice I2CStruct;
 
 void initialise(void)
 {
