@@ -40,6 +40,11 @@ const int IR7_AMBIENT = 22;
 
 I2CDevice I2CStruct;
 
+/*
+ * Function: i2c_initialise
+ * -------------------------
+ * Initialises the I2C Struct with I2C Information relevant to the Pi-Puck
+ */
 void i2c_initialise(void)
 {
   memset(&I2CStruct, 0, (sizeof(&I2CStruct)/sizeof(I2CStruct)));
@@ -55,56 +60,122 @@ void i2c_initialise(void)
 
 }
 
+/*
+ * Function: i2c_destroy
+ * ----------------------
+ * Closes the I2C Connection
+ */
 void i2c_destroy()
 {
+
   i2c_close((&I2CStruct)->bus);
 }
 
+
+/*
+ * Function: write_data_8
+ * -------------------------------------
+ * Writes 8 bits of data to the I2C Bus
+ *
+ * Parameters:
+ * --------------------
+ * -> address:    The corresponding I2C device address for the operation desired.
+ *                Examples of the relevant addresses are found as constants at the top
+ *                of the file.
+ *
+ * -> passedData: Given data to send to I2C 'Address'. This will likely activate/deactivate
+ *                whatever is on the given address.
+ */
 void write_data_8(unsigned int address, u_int8_t passedData)
 {
-  // I2CDevice I2CStruct;
-  // initialise(&I2CStruct);
-
   i2c_write(&I2CStruct, address, &passedData, 1U);
-
-  // _cleanUp(&I2CStruct);
 }
 
 
+/*
+ * Function: write_data_16
+ * -------------------------------------
+ * Writes 16 bits of data to the I2C Bus
+ *
+ * Parameters:
+ * --------------------
+ * -> address:    The corresponding I2C device address for the operation desired.
+ *                Examples of the relevant addresses are found as constants at the top
+ *                of the file.
+ *
+ * -> passedData: Given data to send to I2C 'Address'. This will likely activate/deactivate
+ *                whatever is on the given address.
+ */
 void write_data_16(unsigned int address, u_int16_t passedData)
 {
-  // I2CDevice I2CStruct;
-  // initialise(&I2CStruct);
-
   i2c_write(&I2CStruct, address, &passedData, 2U);
-
-  // _cleanUp(&I2CStruct);
 }
 
 
+/*
+ * Function: read_data_8
+ * -------------------------------------
+ * Reads 8 bits of data from the I2C Bus
+ *
+ * Parameters:
+ * --------------------
+ * -> address:    The corresponding I2C device address for the operation desired.
+ *                Examples of the relevant addresses are found as constants at the top
+ *                of the file.
+ *
+ * -> data: A buffer to read the data stored on the I2C 'Address'
+ */
 void read_data_8(unsigned int address, uint8_t* data)
 {
-  // I2CDevice I2CStruct;
-  // initialise(&I2CStruct);
   i2c_read(&I2CStruct, address, data, 1U);
-  // _cleanUp(&I2CStruct);
 }
 
 
+/*
+ * Function: read_data_16
+ * -------------------------------------
+ * Reads 16 bits of data from the I2C Bus
+ *
+ * Parameters:
+ * --------------------
+ * -> address:    The corresponding I2C device address for the operation desired.
+ *                Examples of the relevant addresses are found as constants at the top
+ *                of the file.
+ *
+ * -> data: A buffer to read the data stored on the I2C 'Address'
+ */
 void read_data_16(unsigned int address, uint16_t* data)
 {
-  // I2CDevice I2CStruct;
-  // initialise(&I2CStruct);
   i2c_read(&I2CStruct, address, data, 2U);
-  // _cleanUp(&I2CStruct);
 }
 
+
+/*
+ * Function: set_outer_leds_byte
+ * --------------------------------------------
+ * Writes a byte of data to the Pi-Puck's outer LEDs I2C Address
+ *
+ * Parameters:
+ * --------------------
+ * -> leds: One-Hot-Encoding for the Outer LEDs of the Pi-Puck
+ */
 void set_outer_leds_byte(int leds)
 {
   write_data_8(OUTER_LEDS, leds);
 }
 
 
+/*
+ * Function: set_outer_leds
+ * ----------------------
+ * Takes input from Buzz Script and equates boolean inputs into an integer for which
+ * outer LED to set
+ *
+ * Parameters:
+ * --------------------
+ * -> ledX: Boolean indicating whether to enable an LED (1) or disable an LED (0)
+ *       where X is are the values 0-7
+ */
 void set_outer_leds(bool led0, bool led1, bool led2, bool led3, bool led4, bool led5, bool led6, bool led7)
 {
   int data = 0x00;
@@ -145,6 +216,17 @@ void set_outer_leds(bool led0, bool led1, bool led2, bool led3, bool led4, bool 
 }
 
 
+/*
+ * Function: set_inner_leds
+ * ---------------------------------------
+ * Takes input from Buzz Script and equates boolean inputs into an integer for which
+ * inner LED to set
+ *
+ * Parameters:
+ * --------------------
+ * -> ledX: Boolean indicating whether to enable an LED (1) or disable an LED (0)
+ *       where X is are the values 0-7
+ */
 void set_inner_leds(bool front, bool body)
 {
   int data = 0x00;
@@ -161,18 +243,46 @@ void set_inner_leds(bool front, bool body)
 }
 
 
+/*
+ * Function: set_left_motor_speed
+ * ----------------------------------------------------------
+ * Sets the left motor speed
+ *
+ * Parameters:
+ * --------------------
+ * -> speed: Integer value for Speed
+ */
 void set_left_motor_speed(int speed)
 {
   write_data_16(LEFT_MOTOR_SPEED, speed);
 }
 
 
+/*
+ * Function: set_right_motor_speed
+ * ----------------------------------------------------------
+ * Sets the right motor speed
+ *
+ * Parameters:
+ * --------------------
+ * -> speed: Integer value for Speed
+ */
 void set_right_motor_speed(int speed)
 {
   write_data_16(RIGHT_MOTOR_SPEED, speed);
 }
 
 
+/*
+ * Function: set_motor_speeds
+ * ----------------------
+ * Sets both wheel's motor speeds
+ *
+ * Parameters:
+ * --------------------
+ * -> speed_left: Integer value for speed of left wheel
+ * -> speed_right: Integer value for speed of right wheel
+ */
 void set_motor_speeds(int speed_left, int speed_right)
 {
   write_data_16(LEFT_MOTOR_SPEED, speed_left);
@@ -180,6 +290,15 @@ void set_motor_speeds(int speed_left, int speed_right)
 }
 
 
+/*
+ * Function: get_left_motor_speed
+ * ----------------------
+ * Gets left wheel's motor speeds
+ *
+ * Returns:
+ * --------------------
+ * -> data: Unsigned 16 bit Integer value for the motor speed
+ */
 u_int16_t get_left_motor_speed()
 {
   uint16_t data;
@@ -188,6 +307,15 @@ u_int16_t get_left_motor_speed()
 }
 
 
+/*
+ * Function: get_right_motor_speed
+ * ----------------------
+ * Gets right wheel's motor speeds
+ *
+ * Returns:
+ * --------------------
+ * -> data: Unsigned 16 bit Integer value for the motor speed
+ */
 u_int16_t get_right_motor_speed()
 {
   uint16_t data;
@@ -196,12 +324,27 @@ u_int16_t get_right_motor_speed()
 }
 
 
+/*
+ * Function: get_motor_speeds
+ * ----------------------
+ * Retrieves motor speeds for both wheels
+ *
+ * Returns:
+ * --------------------
+ * -> get_left_motor_speed(): Unsigned 16 bit Integer value for the motor speed
+ * -> get_right_motor_speed(): Unsigned 16 bit Integer value for the motor speed
+ */
 u_int16_t get_motor_speeds()
 {
   return get_left_motor_speed(), get_right_motor_speed();
 }
 
 
+/*
+ * Function: get_left_motor_steps
+ * ----------------------
+ *
+ */
 u_int16_t get_left_motor_steps()
 {
   uint16_t data;
@@ -210,6 +353,11 @@ u_int16_t get_left_motor_steps()
 }
 
 
+/*
+ * Function: get_right_motor_steps
+ * ----------------------
+ *
+ */
 u_int16_t get_right_motor_steps()
 {
   uint16_t data;
@@ -218,12 +366,26 @@ u_int16_t get_right_motor_steps()
 }
 
 
+/*
+ * Function: get_motor_steps
+ * ----------------------
+ *
+ */
 u_int16_t get_motor_steps()
 {
   return get_left_motor_steps(), get_right_motor_steps();
 }
 
 
+/*
+ * Function: enable_ir_sensors
+ * ----------------------
+ * Enables the Infrared Sensors on the Pi-Puck
+ *
+ * Parameters:
+ * --------------------
+ * -> enabled: boolean value determining if sensors should be enabled or not
+ */
 void enable_ir_sensors(bool enabled)
 {
   uint8_t data = 0x00;
@@ -235,6 +397,19 @@ void enable_ir_sensors(bool enabled)
 }
 
 
+/*
+ * Function: get_ir_reflected
+ * ----------------------
+ * Retrieves the Infrared Sensor values from the Pi-Puck
+ *
+ * Parameters:
+ * --------------------
+ * -> sensor: Integer determining which sensor to read from
+ *
+ * Returns:
+ * --------------------
+ * -> data: Buffer to read the retrieved data into
+ */
 u_int16_t get_ir_reflected(int sensor)
 {
   uint16_t data;
@@ -243,6 +418,19 @@ u_int16_t get_ir_reflected(int sensor)
 }
 
 
+/*
+ * Function: get_ir_ambient
+ * ----------------------
+ * Retrieves the Infrared Ambient values from the Pi-Puck
+ *
+ * Parameters:
+ * --------------------
+ * -> sensor: Integer determining which sensor to read from
+ *
+ * Returns:
+ * --------------------
+ * -> data: Buffer to read the retrieved data into
+ */
 u_int16_t get_ir_ambient(int sensor)
 {
   uint16_t data;
