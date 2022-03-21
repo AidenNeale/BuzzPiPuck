@@ -7,8 +7,8 @@
 #include "PiPuck.h"
 
 // Default E-Puck I2C bus and Firmware Address
-const int I2C_CHANNEL = 12;
-const int LEGACY_I2C_CHANNEL = 4;
+const char I2C_CHANNEL[15] = "/dev/i2c-12";
+const char LEGACY_I2C_CHANNEL[15] = "/dev/i2c-4";
 const int EPUCK_I2C_ADDR = 0x1E;
 
 // Register addresses
@@ -49,13 +49,17 @@ void i2c_initialise(void)
 {
   memset(&I2CStruct, 0, (sizeof(&I2CStruct)/sizeof(I2CStruct)));
 
-  if (((&I2CStruct)->bus = i2c_open("/dev/i2c-" + I2C_CHANNEL)) == -1)
+  if (((&I2CStruct)->bus = i2c_open( I2C_CHANNEL )) == -1)
   {
-    if (((&I2CStruct)->bus = i2c_open("/dev/i2c-" + LEGACY_I2C_CHANNEL)) == -1)
+    printf("This is erroring and trying the next i2c");
+
+    if (((&I2CStruct)->bus = i2c_open( LEGACY_I2C_CHANNEL )) == -1)
     {
+      printf("This is erroring and trying the next i2c");
       printf("I2C Open returns -1");
     }
   }
+
 
   (&I2CStruct)->addr = EPUCK_I2C_ADDR;
   (&I2CStruct)->iaddr_bytes = 1;	/* Device internal address is 1 byte */
