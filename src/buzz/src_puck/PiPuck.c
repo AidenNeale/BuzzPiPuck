@@ -51,15 +51,12 @@ void i2c_initialise(void)
 
   if (((&I2CStruct)->bus = i2c_open( I2C_CHANNEL )) == -1)
   {
-    printf("This is erroring and trying the next i2c");
-
+    /* This attempts to open the I2C Channel used on Legacy Kernels */
     if (((&I2CStruct)->bus = i2c_open( LEGACY_I2C_CHANNEL )) == -1)
     {
-      printf("This is erroring and trying the next i2c");
       printf("I2C Open returns -1");
     }
   }
-
 
   (&I2CStruct)->addr = EPUCK_I2C_ADDR;
   (&I2CStruct)->iaddr_bytes = 1;	/* Device internal address is 1 byte */
@@ -74,7 +71,6 @@ void i2c_initialise(void)
  */
 void i2c_destroy()
 {
-
   i2c_close((&I2CStruct)->bus);
 }
 
