@@ -49,7 +49,7 @@ void i2c_initialise(void)
 {
   memset(&I2CStruct, 0, (sizeof(&I2CStruct)/sizeof(I2CStruct)));
 
-  if (((&I2CStruct)->bus = i2c_open("/dev/i2c-4")) == -1)
+  if (((&I2CStruct)->bus = i2c_open("/dev/i2c-" + LEGACY_I2C_CHANNEL)) == -1)
   {
     printf("I2C Open returns -1");
   }
