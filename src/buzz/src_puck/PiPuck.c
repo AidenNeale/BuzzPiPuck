@@ -7,8 +7,8 @@
 #include "PiPuck.h"
 
 // Default E-Puck I2C bus and Firmware Address
-const char I2C_CHANNEL[15] = "/dev/i2c-12";
-const char LEGACY_I2C_CHANNEL[15] = "/dev/i2c-4";
+const char I2C_CHANNEL[12] = "/dev/i2c-12";
+const char LEGACY_I2C_CHANNEL[11] = "/dev/i2c-4";
 const int EPUCK_I2C_ADDR = 0x1E;
 
 // Register addresses
