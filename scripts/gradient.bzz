@@ -1,6 +1,6 @@
 function init() {
   iteration = 0
-  if(id == 0) {
+  if(id == 1) {
     # Source robot
     mydist = 0.
   }
@@ -52,15 +52,6 @@ function step() {
   if(iteration % 30 == 0) {
     log("This is reaching broadcast")
     neighbors.broadcast("dist_to_source", mydist)
-    log("This is reaching listen")
-    # Listen to other robots' distances
-    neighbors.listen("dist_to_source",
-      function(value_id, value, robot_id) {
-        mydist = math.min(
-          mydist,
-          neighbors.get(robot_id).distance + value)
-      })
-    log(neighbors.get(robot_id).distance)
   }
   iteration = iteration + 1
 }
