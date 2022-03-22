@@ -1,0 +1,61 @@
+function init() {
+  iteration = 0
+  if(id == 0) {
+    # Source robot
+    mydist = 0.
+  }
+  else {
+    # Other robots
+    mydist = 1000.
+    # Listen to other robots' distances
+    neighbors.listen("dist_to_source",
+      function(value_id, value, robot_id) {
+        mydist = math.min(
+          mydist,
+          neighbors.get(robot_id).distance + value)
+      })
+  }
+}
+
+function step() {
+  # Added color gradient from red (closest) to blue (furthest)
+  if(mydist < 50) {
+    set_outer_leds(1, 1, 1, 1, 1, 1, 1, 1))
+  }
+  else if (mydist >= 50 and mydist < 65) {
+    set_outer_leds(0, 1, 1, 1, 1, 1, 1, 1)
+  }
+  else if (mydist >= 65 and mydist < 80) {
+    set_outer_leds(0, 0, 1, 1, 1, 1, 1, 1)
+  }
+  else if (mydist >= 80 and mydist < 95) {
+    set_outer_leds(0, 0, 0, 1, 1, 1, 1, 1)
+  }
+  else if (mydist >= 95 and mydist < 110) {
+    set_outer_leds(0, 0, 0, 0, 1, 1, 1, 1)
+  }
+  else if (mydist >= 110 and mydist < 125) {
+    set_outer_leds(0, 0, 0, 0, 0, 1, 1, 1)
+  }
+  else if (mydist >= 125 and mydist < 140) {
+    set_outer_leds(0, 0, 0, 0, 0, 0, 1, 1)
+  }
+  else if (mydist >= 140 and mydist < 155) {
+    set_outer_leds(0, 0, 0, 0, 0, 0, 0, 1)
+  }
+  else  {
+    set_outer_leds(0, 0, 0, 0, 0, 0, 0, 0)
+  }
+
+  # Set message to be passed every 3s
+  if(iteration % 30 == 0) {
+    neighbors.broadcast("dist_to_source", mydist)
+  }
+  iteration = iteration + 1
+}
+
+function reset() {
+}
+
+function destroy() {
+}
