@@ -52,7 +52,9 @@ function step() {
   if(iteration % 30 == 0) {
     log("This is reaching broadcast")
     neighbors.broadcast("dist_to_source", mydist)
-    log(neighbors.get(1).distance)
+    neighbors.foreach(function(rid ,data) {
+      log(data)
+    }
   }
   iteration = iteration + 1
 }
