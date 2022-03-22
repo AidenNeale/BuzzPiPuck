@@ -19,6 +19,7 @@ function init() {
 
 function step() {
   # Added color gradient from red (closest) to blue (furthest)
+  log(mydist)
   if(mydist < 50) {
     set_outer_leds(1, 1, 1, 1, 1, 1, 1, 1)
   }
