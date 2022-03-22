@@ -4,15 +4,33 @@ function printvec2(msg, v) {
   log(msg, "<", v.x, ",", v.y, ">")
 }
 
-v1 = math.vec2.new(1, 2)
-printvec2("v1 = ", v1)
 
-v2 = math.vec2.newp(3, math.pi)
-printvec2("v2 = ", v2)
+# Executed at init time
+function init() {
+  v1 = math.vec2.new(1, 2)
+  printvec2("v1 = ", v1)
 
-v3 = math.vec2.newp(3, 2*math.pi)
-printvec2("v3 = ", v3)
+  v2 = math.vec2.newp(3, math.pi)
+  printvec2("v2 = ", v2)
+
+  v3 = math.vec2.newp(3, 2*math.pi)
+  printvec2("v3 = ", v3)
+
+  v4 = math.vec2.newp(3, -math.pi)
+  printvec2("v3 = ", v3)
+}
+
+# Executed at step time
+function step() {
+}
+
+# Executed at reset time
+function reset() {
+}
+
+# Executed at destroy time
+function destroy() {
+}
 
 
-v4 = math.vec2.newp(3, -math.pi)
-printvec2("v3 = ", v3)
+
