@@ -50,6 +50,7 @@ function step() {
 
   # Set message to be passed every 3s
   if(iteration % 30 == 0) {
+    log("This is reaching broadcast")
     neighbors.broadcast("dist_to_source", mydist)
   }
   iteration = iteration + 1
