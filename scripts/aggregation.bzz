@@ -10,10 +10,10 @@ function aggregate() {
       set_wheels(10.0, 10.0) # Sets the velocity of the wheels
     }
 		else if (degrees > 25){
-      set_wheels(4.0, 10.0) # Sets the velocity of the wheels if no robot is in range of vision
+      set_wheels(10.0, 4.0) # Sets the velocity of the wheels if no robot is in range of vision
     }
     else {
-      set_wheels(10.0, 4.0) # Sets the velocity of the wheels if no robot is in range of vision
+      set_wheels(4.0, 10.0) # Sets the velocity of the wheels if no robot is in range of vision
     }
   })
 }
