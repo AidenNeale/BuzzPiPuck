@@ -54,7 +54,7 @@ function step() {
     neighbors.broadcast("dist_to_source", mydist)
     neighbors.foreach(function(rid ,data) {
       log(data)
-    }
+    })
   }
   iteration = iteration + 1
 }
