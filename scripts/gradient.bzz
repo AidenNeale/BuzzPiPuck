@@ -60,6 +60,7 @@ function step() {
           mydist,
           neighbors.get(robot_id).distance + value)
       })
+    log(neighbors.get(robot_id).distance)
   }
   iteration = iteration + 1
 }
