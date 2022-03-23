@@ -89,6 +89,26 @@ int pipuck_set_outer_leds(buzzvm_t vm) {
   return buzzvm_ret0(vm);
 }
 
+void WrapValue(float *t_value) {
+         while(*t_value > 3.1416) *t_value -= 2*3.1416;
+         while(*t_value < -3.1416) *t_value += 2*3.1416;
+}
+
+float calculate_rel_theta(float *vect) {
+
+  float angle = atan2(vect[1],vect[0]);
+  WrapValue(&angle);
+
+  return angle;
+}
+
+float calculate_rel_distance(float* vect) {
+   /* Get the length of the heading vector */
+   float fHeadingLength = pow(vect[0], 2) + pow(vect[1], 2);
+   fHeadingLength = sqrt(fHeadingLength);
+   return fHeadingLength;
+}
+
 int pipuck_goto(buzzvm_t vm) {
   printf("X: %f, Y: %f, Z: %f, Theta: %f", POSE[0], POSE[1], POSE[2], POSE[3]);
   /*Retrieves X and Y Coordinates of Goto */
@@ -127,20 +147,6 @@ int pipuck_goto(buzzvm_t vm) {
   return buzzvm_ret0(vm);
 }
 
-float calculate_rel_theta(float* vect) {
-
-  float angle = atan2(vect[1],vect[0]);
-  WrapValue(&angle);
-
-  return angle;
-}
-
-float calculate_rel_distance(float* vect) {
-   /* Get the length of the heading vector */
-   float fHeadingLength = pow(vect[0], 2) + pow(vect[1], 2);
-   fHeadingLength = sqrt(fHeadingLength);
-   return fHeadingLength;
-}
 
 int buzz_sleep_ms(buzzvm_t vm) {
   buzzvm_lnum_assert(vm, 1);
@@ -155,10 +161,6 @@ int buzz_sleep_ms(buzzvm_t vm) {
   return buzzvm_ret0(vm);
 }
 
-void WrapValue(float *t_value) {
-         while(*t_value > 3.1416) *t_value -= 2*3.1416;
-         while(*t_value < -3.1416) *t_value += 2*3.1416;
-}
 
 // void SetWheelSpeedsFromVector(float* vec) {
 //    float HardTurnOnAngleThreshold = 1.57; //90.0 deg
