@@ -140,7 +140,9 @@ int pipuck_goto(buzzvm_t vm) {
       set_motor_speeds(50, 20);
     }
     else{
-      printf("Aimed at the direction");
+      printf("Vector X: %f, Vector Y: %f\n\r", vect[0], vect[1]);
+      printf("Pose[0]: %f, Pose[1]: %f\n\r", POSE[0], POSE[1]);
+      printf("Calculated Angle: %f\n\r", angle);
     }
   }
 
