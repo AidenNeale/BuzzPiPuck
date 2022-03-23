@@ -1,0 +1,15 @@
+# Executed at init time
+function init() {
+}
+
+# Executed every time step
+function step() {
+  goto(1, 1)
+}
+
+# Executed once when the robot (or the simulator) is reset.
+function reset() {
+}
+# Execute at exit
+function destroy() {
+}
