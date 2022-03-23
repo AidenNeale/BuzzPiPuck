@@ -91,16 +91,55 @@ int pipuck_set_outer_leds(buzzvm_t vm) {
 
 int pipuck_goto(buzzvm_t vm) {
   printf("X: %f, Y: %f, Z: %f, Theta: %f", POSE[0], POSE[1], POSE[2], POSE[3]);
+  /*Retrieves X and Y Coordinates of Goto */
   buzzvm_lnum_assert(vm, 2);
-  buzzvm_lload(vm, 1); /* X Coordinate */
-  buzzvm_lload(vm, 2); /* Y Coordinate */
+  buzzvm_lload(vm, 1); /* Y Coordinate */
+  buzzvm_lload(vm, 2); /* X Coordinate */
   buzzvm_type_assert(vm, 2, BUZZTYPE_FLOAT);
   buzzvm_type_assert(vm, 1, BUZZTYPE_FLOAT);
+
+  float gotoX = buzzvm_stack_at(vm, 2)->f.value;
+  float gotoY = buzzvm_stack_at(vm, 1)->f.value;
+
+  /* Create a vector relative to the position of the robot */
+  float vect[2];
+  vect[0]= gotoX - POSE[0];
+  vect[1]= gotoY - POSE[1];
+
+  float angle = calculate_rel_theta(vect);
+  // float distance = calculate_rel_distance(vect);
+
+  while (angle < 10 && angle > -10) {
+    vect[0]= gotoX - POSE[0];
+    vect[1]= gotoY - POSE[1];
+    angle = calculate_rel_theta(vect);
+    if (angle > 10) {
+      set_motor_speeds(20, 50);
+    }
+    if (angle < -10) {
+      set_motor_speeds(50, 20);
+    }
+    else{
+      printf("Aimed at the direction");
+    }
+  }
+
   return buzzvm_ret0(vm);
 }
 
-float calculate_theta() {
+float calculate_rel_theta(float* vect) {
 
+  float angle = atan2(vect[1],vect[0]);
+  WrapValue(&angle);
+
+  return angle;
+}
+
+float calculate_rel_distance(float* vect) {
+   /* Get the length of the heading vector */
+   float fHeadingLength = pow(vect[0], 2) + pow(vect[1], 2);
+   fHeadingLength = sqrt(fHeadingLength);
+   return fHeadingLength;
 }
 
 int buzz_sleep_ms(buzzvm_t vm) {
@@ -116,10 +155,10 @@ int buzz_sleep_ms(buzzvm_t vm) {
   return buzzvm_ret0(vm);
 }
 
-// void WrapValue(float *t_value) {
-//          while(*t_value > 3.1416) *t_value -= 2*3.1416;
-//          while(*t_value < -3.1416) *t_value += 2*3.1416;
-// }
+void WrapValue(float *t_value) {
+         while(*t_value > 3.1416) *t_value -= 2*3.1416;
+         while(*t_value < -3.1416) *t_value += 2*3.1416;
+}
 
 // void SetWheelSpeedsFromVector(float* vec) {
 //    float HardTurnOnAngleThreshold = 1.57; //90.0 deg
