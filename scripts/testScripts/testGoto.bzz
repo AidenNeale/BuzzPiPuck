@@ -4,7 +4,7 @@ function init() {
 
 # Executed every time step
 function step() {
-  goto(1, 1)
+  goto(1.0, 1.0)
 }
 
 # Executed once when the robot (or the simulator) is reset.
