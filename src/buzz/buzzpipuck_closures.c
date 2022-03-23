@@ -129,7 +129,7 @@ int pipuck_goto(buzzvm_t vm) {
   float angle = calculate_rel_theta_deg(vect);
   // float distance = calculate_rel_distance(vect);
   printf("Angle: %f\n", angle);
-  while (angle > 10 && angle < -10) {
+  while (angle > 10 || angle < -10) {
     vect[0]= gotoX - POSE[0];
     vect[1]= gotoY - POSE[1];
     angle = calculate_rel_theta_deg(vect);
