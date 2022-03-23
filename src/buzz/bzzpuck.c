@@ -3,6 +3,7 @@
 #include <pipuck_utility.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
@@ -124,6 +125,11 @@ int main(int argc, char** argv) {
   /* Set CTRL-C handler */
   signal(SIGTERM, ctrlc_handler);
   signal(SIGINT, ctrlc_handler);
+
+  struct timespec ts;
+  ts.tv_sec = 1;
+  ts.tv_nsec = 0;
+  nanosleep(&ts, NULL);
 
   /* Set the Buzz bytecode */
   if(buzz_script_set(bcfname, dbgfname, RID)) {
