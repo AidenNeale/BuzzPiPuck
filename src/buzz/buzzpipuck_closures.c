@@ -134,9 +134,11 @@ int pipuck_goto(buzzvm_t vm) {
     vect[1]= gotoY - POSE[1];
     angle = calculate_rel_theta_deg(vect);
     if (angle > 10) {
+      printf("Angle > 10 Degrees");
       set_motor_speeds(20, 50);
     }
     if (angle < -10) {
+      printf("Angle < -10");
       set_motor_speeds(50, 20);
     }
     else{
