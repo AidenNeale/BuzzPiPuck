@@ -94,8 +94,8 @@ int pipuck_goto(buzzvm_t vm) {
   buzzvm_lnum_assert(vm, 2);
   buzzvm_lload(vm, 1); /* X Coordinate */
   buzzvm_lload(vm, 2); /* Y Coordinate */
-  buzzvm_type_assert(vm, 2, BUZZTYPE_FLOAT);
-  buzzvm_type_assert(vm, 1, BUZZTYPE_FLOAT);
+  buzzvm_type_assert(vm, 2, BUZZTYPE_INT);
+  buzzvm_type_assert(vm, 1, BUZZTYPE_INT);
   return buzzvm_ret0(vm);
 }
 
