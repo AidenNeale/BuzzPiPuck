@@ -57,4 +57,5 @@ function reset() {
 }
 
 function destroy() {
+  set_outer_leds(0, 0, 0, 0, 0, 0, 0, 0)
 }
