@@ -17,6 +17,7 @@ extern int pipuck_set_outer_leds(buzzvm_t vm);
 
 extern int buzz_sleep_ms(buzzvm_t vm);
 
+extern int pipuck_goto(buzzvm_t vm);
 /*
  * Updates battery information in Buzz
  */

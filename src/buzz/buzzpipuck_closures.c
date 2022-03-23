@@ -6,18 +6,6 @@
 #include "buzzpipuck_closures.h"
 #include "pipuck_utility.h"
 
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
-
-static const float sampling_rate = 0.01;
-static const float filter_time_const = 0.02;
-float ir_table [8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-int rgb_val[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-long led_freq = -1;
-int US_ENABLED = 0;
-int TurningMechanism = 0;
-
-/*Mutex for led rgb values*/
-static pthread_mutex_t led_mutex;
 /****************************************/
 /****************************************/
 
@@ -100,6 +88,21 @@ int pipuck_set_outer_leds(buzzvm_t vm) {
   return buzzvm_ret0(vm);
 }
 
+int pipuck_goto(buzzvm_t vm) {
+  buzzvm_lnum_assert(vm, 2);
+  buzzvm_lload(vm, 1); /* X Coordinate */
+  buzzvm_lload(vm, 2); /* Y Coordinate */
+  buzzvm_type_assert(vm, 2, BUZZTYPE_FLOAT);
+  buzzvm_type_assert(vm, 1, BUZZTYPE_FLOAT);
+  set_motor_speeds(buzzvm_stack_at(vm, 2)->f.value * 10.0f, /* Left speed */
+                  buzzvm_stack_at(vm, 1)->f.value * 10.0f);/* Right speed */
+  return buzzvm_ret0(vm);
+}
+
+float calculate_theta() {
+
+}
+
 int buzz_sleep_ms(buzzvm_t vm) {
   buzzvm_lnum_assert(vm, 1);
   buzzvm_lload(vm, 1); /* LED0 */
@@ -123,7 +126,6 @@ int buzz_sleep_ms(buzzvm_t vm) {
 //    float MaxSpeed = 20.0;
 // //printf("Got (%.2f,%.2f), turning is %i\n", vec[0], vec[1], TurningMechanism);
 //    /* Get the heading angle */
-//    //CRadians cHeadingAngle = c_heading.Angle().SignedNormalize();
 //    float cHeadingAngle = atan2 (vec[1],vec[0]);
 //    WrapValue(&cHeadingAngle);
 //    /* Get the length of the heading vector */
@@ -137,18 +139,15 @@ int buzz_sleep_ms(buzzvm_t vm) {
 //    /* Turning state switching conditions */
 //    if(fabs(cHeadingAngle) <= NoTurnAngleThreshold) {
 //       /* No Turn, heading angle very small */
-// //printf("HERE1\n");
 //       TurningMechanism = 0;
 //    }
 //    else if(fabs(cHeadingAngle) > HardTurnOnAngleThreshold) {
 //       /* Hard Turn, heading angle very large */
-// //printf("HERE2\n");
 //       TurningMechanism = 2;
 //    }
 //    else if(TurningMechanism == 0 &&
 //            fabs(cHeadingAngle) > SoftTurnOnAngleThreshold) {
 //       /* Soft Turn, heading angle in between the two cases */
-// //printf("HERE3\n");
 //       TurningMechanism = 1;
 //    }
 
@@ -206,9 +205,6 @@ int buzz_sleep_ms(buzzvm_t vm) {
 //    float vect[2];
 //    vect[0]=buzzvm_stack_at(vm, 2)->f.value;
 //    vect[1]=buzzvm_stack_at(vm, 1)->f.value;
-//    //CVector2 cDir(buzzvm_stack_at(vm, 2)->f.value,
-//    //              buzzvm_stack_at(vm, 1)->f.value);
-//    //buzzvm_gload(vm);
 //    SetWheelSpeedsFromVector(vect);
 //    return buzzvm_ret0(vm);
 // }
@@ -218,7 +214,6 @@ int buzz_sleep_ms(buzzvm_t vm) {
 
 // int buzzkh4_update_battery(buzzvm_t vm) {
 //    static char BATTERY_BUF[256];
-//    // kh4_battery_status(BATTERY_BUF, DSPIC);
 //    buzzvm_pushs(vm, buzzvm_string_register(vm, "battery", 1));
 //    buzzvm_pusht(vm);
 //    buzzvm_dup(vm);
@@ -311,7 +306,7 @@ int buzzkh4_abs_position(buzzvm_t vm, float x, float y, float theta) {
   buzzvm_pushs(vm, buzzvm_string_register(vm, "orientation", 0));
   buzzvm_push(vm, tOrientation);
   buzzvm_tput(vm);
-   return vm->state;
+  return vm->state;
 }
 
 // /****************************************/
