@@ -297,6 +297,9 @@ static int buzz_register_hooks() {
   buzzvm_pushs(VM,  buzzvm_string_register(VM, "set_outer_leds", 1));
   buzzvm_pushcc(VM, buzzvm_function_register(VM, pipuck_set_outer_leds));
   buzzvm_gstore(VM);
+  buzzvm_pushs(VM,  buzzvm_string_register(VM, "goto", 1));
+  buzzvm_pushcc(VM, buzzvm_function_register(VM, pipuck_goto));
+  buzzvm_gstore(VM);
   buzzvm_pushs(VM,  buzzvm_string_register(VM, "sleep", 1));
   buzzvm_pushcc(VM, buzzvm_function_register(VM, buzz_sleep_ms));
   buzzvm_gstore(VM);
@@ -618,103 +621,4 @@ int buzz_script_done() {
    return VM->state != BUZZVM_STATE_READY;
 }
 
-// int buzzutility_enable_us(buzzvm_t vm){
-//    buzzvm_lnum_assert(vm, 1);
-//    buzzvm_lload(vm, 1); /* 0 disable 1 enable */
-//    buzzvm_type_assert(vm, 1, BUZZTYPE_INT);
-//    buzzkh4_enable_us(vm, buzzvm_stack_at(vm, 1)->i.value);
-//    return buzzvm_ret0(vm);
-// }
-
-// int buzzutility_play_sound(buzzvm_t vm){
-//   buzzvm_lnum_assert(vm, 2);
-//   buzzvm_lload(vm, 1); /* filename */
-//   buzzvm_lload(vm, 2); /* volume */
-//   buzzvm_type_assert(vm, 2, BUZZTYPE_STRING);
-//   buzzvm_type_assert(vm, 1, BUZZTYPE_INT);
-//   /* buzzkh4_play_sound(vm,  buzzvm_stack_at(vm, 2)->s.value.str,
-//                           buzzvm_stack_at(vm, 1)->i.value); */
-//   return buzzvm_ret0(vm);
-// }
-
-/****************************************/
-/****************************************/
-// uint8_t on = 0;
-// void* blink(void *args) {
-//   while(1) {
-//     pthread_testcancel();
-//     long f = get_led_freq();
-//     if(f==-1)
-//       continue;
-//     else if(f==0 && !on) {
-//       on = 1;
-//       turnon_led(on);
-//     } else if(f!=0) {
-//       turnon_led(on);
-//       usleep(f);
-//       on = !on;
-//     }
-//     pthread_testcancel();
-//   }
-
-//   return NULL;
-// }
-
-// void start_blink() {
-//    pthread_create(&blink_thread, NULL, &blink, NULL);
-// }
-
-/****************************************/
-/****************************************/
-/*
-void* camera_thread(void *args){
-int* blob;
-   while(1){
-      int cam_enable=get_enable_cam();
-      pthread_testcancel();
-      if(cam_enable == 1){
-      blob = get_blob_pos();
-      pthread_testcancel();
-      pthread_mutex_lock(&camera_mutex);
-      blob_pos[0] =blob[0];
-      blob_pos[1] =blob[1];
-      blob_pos[2] =blob[2];
-      blob_pos[3] =blob[3];
-      pthread_mutex_unlock(&camera_mutex);
-      pthread_testcancel();
-      }
-   }
-
-
-}
-void camera_routine(){
-    initialize_camera();
-
-   pthread_create(&blob_manage, NULL, &camera_thread, NULL);
-
-
-}
-int buzzutility_enable_camera(buzzvm_t vm){
-   buzzvm_lnum_assert(vm, 1);
-   buzzvm_lload(vm, 1); // 0 disable 1 enable
-   buzzvm_type_assert(vm, 1, BUZZTYPE_INT);
-   set_enable_cam(buzzvm_stack_at(vm, 1)->i.value);
-   printf("enablecam_val = \n, buzz returned value = \n");
-   return buzzvm_ret0(vm);
-}
-
-void set_enable_cam(int cam_enable){
-	pthread_mutex_lock(&camera_enable_mutex);
-	enable_cam=cam_enable;
-	pthread_mutex_unlock(&camera_enable_mutex);
-}
-
-int get_enable_cam(){
-	int cam_enable;
-	pthread_mutex_lock(&camera_enable_mutex);
-	cam_enable=enable_cam;
-	pthread_mutex_unlock(&camera_enable_mutex);
-return cam_enable;
-}
-*/
 
