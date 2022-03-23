@@ -10,17 +10,13 @@ function init() {
     # Listen to other robots' distances
     neighbors.listen("dist_to_source",
       function(value_id, value, robot_id) {
-        log("Hearing that")
-        mydist = math.min(
-          mydist,
-          neighbors.get(robot_id).distance + value)
+          mydist = math.min(mydist, neighbors.get(robot_id).distance + value)
       })
   }
 }
 
 function step() {
   # Added color gradient from red (closest) to blue (furthest)
-  log(mydist)
   if(mydist < 50) {
     set_outer_leds(1, 1, 1, 1, 1, 1, 1, 1)
   }
@@ -50,12 +46,9 @@ function step() {
   }
 
   # Set message to be passed every 3s
-  if(iteration % 30 == 0) {
+  if(iteration % 3 == 0) {
     log("This is reaching broadcast")
     neighbors.broadcast("dist_to_source", mydist)
-    neighbors.foreach(function(rid ,data) {
-      log(data)
-    })
   }
   iteration = iteration + 1
 }
