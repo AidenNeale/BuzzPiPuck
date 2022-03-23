@@ -94,11 +94,11 @@ void WrapValue(float *t_value) {
          while(*t_value < -3.1416) *t_value += 2*3.1416;
 }
 
-float calculate_rel_theta(float *vect) {
+float calculate_rel_theta_deg(float *vect) {
 
   float angle = atan2(vect[1],vect[0]);
   WrapValue(&angle);
-
+  angle *= (180.0/3.1416);
   return angle;
 }
 
@@ -126,13 +126,13 @@ int pipuck_goto(buzzvm_t vm) {
   vect[0]= gotoX - POSE[0];
   vect[1]= gotoY - POSE[1];
 
-  float angle = calculate_rel_theta(vect);
+  float angle = calculate_rel_theta_deg(vect);
   // float distance = calculate_rel_distance(vect);
 
   while (angle < 10 && angle > -10) {
     vect[0]= gotoX - POSE[0];
     vect[1]= gotoY - POSE[1];
-    angle = calculate_rel_theta(vect);
+    angle = calculate_rel_theta_deg(vect);
     if (angle > 10) {
       set_motor_speeds(20, 50);
     }
