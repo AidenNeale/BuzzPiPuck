@@ -9,6 +9,10 @@ EPSILON    = 150.0
 
 # Neighbor data to LJ interaction vector
 function lj_vector(rid, data) {
+  log("robot ", rid, ": ",
+    "distance  = ", data.distance, ", ",
+    "azimuth   = ", data.azimuth, ", ",
+    "elevation = ", data.elevation)
   return math.vec2.newp(lj_magnitude(data.distance, TARGET, EPSILON), data.azimuth)
 }
 
@@ -26,6 +30,7 @@ function lj_sum(rid, data, accum) {
 function disperse() {
   # Calculate accumulator
   var accum = neighbors.map(lj_vector).reduce(lj_sum, math.vec2.new(0.0, 0.0))
+  log("AccumulatorX ", accum.x, ", AccumulatorY ", accum.y)
   if(neighbors.count() > 0)
     math.vec2.scale(accum, 1.0 / neighbors.count())
   # Move according to vector
