@@ -126,6 +126,8 @@ int main(int argc, char** argv) {
   signal(SIGTERM, ctrlc_handler);
   signal(SIGINT, ctrlc_handler);
 
+  /* Sleep for 1 second in order to allow Communication Threads
+  to begin communicating to update Robot's own position */
   struct timespec ts;
   ts.tv_sec = 1;
   ts.tv_nsec = 0;
