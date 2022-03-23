@@ -19,7 +19,6 @@ extern "C"
 #include "buzzpipuck_closures.h"
 #include <sys/time.h>
 
-extern float POSE[4];
 extern int DONE;
 
 /*main inav function execution*/

@@ -4,6 +4,8 @@
 #include "PiPuck.h"
 #include <buzz/buzzvm.h>
 
+extern float POSE[4];
+
 extern int buzz_pipuck_print(buzzvm_t vm);
 
 /*

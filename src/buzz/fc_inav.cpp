@@ -16,5 +16,3 @@
 // user input functions or otherwise, then CMDS is being used to
 // set the RC commands and POSE is being used to send positions
 // to the FC to pursue position or velocity*/
-
-float POSE[4] = {10,25,39,40};                  //position: x,y,z and Yaw wrt mocap frame

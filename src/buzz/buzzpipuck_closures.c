@@ -6,6 +6,7 @@
 #include "buzzpipuck_closures.h"
 #include "pipuck_utility.h"
 
+float POSE[4] = {0, 0, 0, 0}; //X, Y, Z, Theta
 /****************************************/
 /****************************************/
 
@@ -89,13 +90,12 @@ int pipuck_set_outer_leds(buzzvm_t vm) {
 }
 
 int pipuck_goto(buzzvm_t vm) {
+  printf("X: %f, Y: %f, Z: %f, Theta: %f", POSE[0], POSE[1], POSE[2], POSE[3]);
   buzzvm_lnum_assert(vm, 2);
   buzzvm_lload(vm, 1); /* X Coordinate */
   buzzvm_lload(vm, 2); /* Y Coordinate */
   buzzvm_type_assert(vm, 2, BUZZTYPE_FLOAT);
   buzzvm_type_assert(vm, 1, BUZZTYPE_FLOAT);
-  set_motor_speeds(buzzvm_stack_at(vm, 2)->f.value * 10.0f, /* Left speed */
-                  buzzvm_stack_at(vm, 1)->f.value * 10.0f);/* Right speed */
   return buzzvm_ret0(vm);
 }
 
@@ -105,12 +105,14 @@ float calculate_theta() {
 
 int buzz_sleep_ms(buzzvm_t vm) {
   buzzvm_lnum_assert(vm, 1);
-  buzzvm_lload(vm, 1); /* LED0 */
+  buzzvm_lload(vm, 1);
   buzzvm_type_assert(vm, 1, BUZZTYPE_FLOAT);
+
   struct timespec ts;
   ts.tv_sec = ((int) buzzvm_stack_at(vm, 1)->f.value) / 1;
   ts.tv_nsec = (((int) buzzvm_stack_at(vm, 1)->f.value) % 1) * 1000000000;
   nanosleep(&ts, NULL);
+
   return buzzvm_ret0(vm);
 }
 
