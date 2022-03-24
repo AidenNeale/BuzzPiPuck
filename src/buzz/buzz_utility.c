@@ -28,8 +28,6 @@ static int         MSG_SIZE        = -1;
 static int         UDP_LIST_STREAM = -1;
 static int         UDP_COMM_STREAM = -1;
 static uint8_t*    STREAM_SEND_BUF = NULL;
-static int         blob_pos[4];
-static int         enable_cam=0;
 static int         MSG_RANGE = 1.0;  //Max accepted range for msgs (m)
 static char        UDP_LIST_STREAM_PORT[10];
 
