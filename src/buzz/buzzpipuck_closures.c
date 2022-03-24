@@ -90,16 +90,18 @@ int pipuck_set_outer_leds(buzzvm_t vm) {
 }
 
 void WrapValue(float *t_value) {
-         while(*t_value > 3.1416) *t_value -= 2*3.1416;
-         while(*t_value < -3.1416) *t_value += 2*3.1416;
+  while(*t_value > 3.1416) *t_value -= 2*3.1416;
+  while(*t_value < -3.1416) *t_value += 2*3.1416;
+}
+float Rad2Deg(float t_value) {
+  return t_value * (180.0/3.1416);
 }
 
 float calculate_rel_theta_deg(float *vect) {
 
   float angle = atan2(vect[1],vect[0]);
   WrapValue(&angle);
-  angle *= (180.0/3.1416);
-  return angle;
+  return Rad2Deg(angle);
 }
 
 float calculate_rel_distance(float* vect) {
@@ -110,7 +112,10 @@ float calculate_rel_distance(float* vect) {
 }
 
 int pipuck_goto(buzzvm_t vm) {
-  printf("X: %f, Y: %f, Z: %f, Theta: %f", POSE[0], POSE[1], POSE[2], POSE[3]);
+  float vect[2], angle;
+
+  printf("X: %f, Y: %f, Z: %f, Theta: %f\n\r", POSE[0], POSE[1], POSE[2], POSE[3]);
+
   /*Retrieves X and Y Coordinates of Goto */
   buzzvm_lnum_assert(vm, 2);
   buzzvm_lload(vm, 1); /* Y Coordinate */
@@ -121,26 +126,37 @@ int pipuck_goto(buzzvm_t vm) {
   float gotoX = buzzvm_stack_at(vm, 2)->f.value;
   float gotoY = buzzvm_stack_at(vm, 1)->f.value;
 
-  /* Create a vector relative to the position of the robot */
-  float vect[2];
-  vect[0]= gotoX - POSE[0];
-  vect[1]= gotoY - POSE[1];
-  printf("Reaching pre-calc\n");
-  float angle = calculate_rel_theta_deg(vect);
-  // float distance = calculate_rel_distance(vect);
-  printf("Angle: %f\n", angle);
-  while (POSE[3] > 5 || POSE[3] < -5) {
+  //Boolean value to determine if Goto has been completed
+  int GOTO = 1, acceptable_error = 3;
+
+  while (GOTO) {
+    /* Create a vector relative to the position of the robot */
     vect[0]= gotoX - POSE[0];
     vect[1]= gotoY - POSE[1];
+
     angle = calculate_rel_theta_deg(vect);
-    if (angle > 5) {
-      printf("Angle > 5 Degrees");
-      set_motor_speeds(100, 500);
+    printf("The current angle is: %f, Aiming at: %f\n", POSE[3], angle);
+
+    if (Rad2Deg(POSE[3]) > (angle + acceptable_error)) {
+      printf("Bearing > 3 Degrees");
+      set_motor_speeds(-500, 500);
     }
-    else if (angle < -5) {
-      printf("Angle < -5");
-      set_motor_speeds(500, 100);
+    else if (Rad2Deg(POSE[3]) > (angle - acceptable_error)) {
+      printf("Bearing < -3");
+      set_motor_speeds(500, -500);
     }
+    else {
+      //Aimed in the correct direction
+      if (calculate_rel_distance(vect) > 0.05){
+        set_motor_speeds(500, 500);
+      }
+      else {
+        printf("Finished GOTO at location- X: %f, Y: %f", POSE[0], POSE[1]);
+        set_motor_speeds(0, 0);
+        GOTO = 0;
+      }
+    }
+
   printf("Vector X: %f, Vector Y: %f\n\r", vect[0], vect[1]);
   printf("Pose[0]: %f, Pose[1]: %f, POSE[3]: %f\n\r", POSE[0], POSE[1], POSE[3]);
   printf("Calculated Angle: %f\n\r", angle);
