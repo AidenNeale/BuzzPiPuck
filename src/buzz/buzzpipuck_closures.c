@@ -129,11 +129,11 @@ int pipuck_goto(buzzvm_t vm) {
 
   if (Rad2Deg(POSE[3]) > (angle + acceptable_error)) {
     printf("Bearing > 5 Degrees");
-    set_motor_speeds(-300, 500);
+    set_motor_speeds(-100, 100);
   }
   else if (Rad2Deg(POSE[3]) < (angle - acceptable_error)) {
     printf("Bearing < -5");
-    set_motor_speeds(500, -300);
+    set_motor_speeds(100, -100);
   }
   else {
     //Aimed in the correct direction
