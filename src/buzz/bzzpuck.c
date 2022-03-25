@@ -21,7 +21,6 @@ int DONE = 0;
  * --------------------
  * -> path:
  * -> status:
-
  */
 void usage(const char* path, int status) {
    fprintf(stderr, "Usage:\n");
