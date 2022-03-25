@@ -36,8 +36,6 @@ float abs_x = 0.0, abs_y = 0.0, abs_z = 0.0, abs_theta = 0.0;
 
 static int ROBOT_ID;
 
-#define IDOFFSET 0
-
 /* Pointer to a function that sends a message on the stream */
 static void (*STREAM_SEND)() = NULL;
 
@@ -52,12 +50,12 @@ static pthread_mutex_t INCOMING_PACKET_MUTEX;
 
 /* List of packets received over the stream */
 struct incoming_packet_s {
-   /* Id of the message sender */
-   int id;
-   /* Payload */
-   uint16_t* payload;
-   /* Next message */
-   struct incoming_packet_s* next;
+  /* Id of the message sender */
+  int id;
+  /* Payload */
+  uint16_t* payload;
+  /* Next message */
+  struct incoming_packet_s* next;
 };
 
 /* The list of incoming packets */
@@ -103,8 +101,12 @@ void incoming_packet_add(uint16_t id, const uint8_t* pl) {
 
 /****************************************/
 /****************************************/
-/*this function works forever in its own thread*/
+/*this function works forever in its own thread listening
+for data sent over the UDP Stream*/
 void* buzz_stream_incoming_thread_UDP(void* args) {
+  /*
+
+  */
    /* Create buffer for message */
    uint8_t* buf = calloc(MSG_SIZE, 1);
    /* Tot bytes left to receive, received up to now, and received at a
@@ -320,7 +322,6 @@ int buzz_script_set(const char* bo_filename,
    // printf("the hostname is: %s\n",hstnm);
    /* Make numeric id from hostname */
    /* NOTE: here we assume that the hostname is in the format Knn */
-   // ROBOT_ID = strtol(hstnm + 1, NULL, 10) + IDOFFSET;	//CHANGES FOR OFFROBOTS TESTS!!!!
    printf("robot id is %d\n",robot_id);
    ROBOT_ID = robot_id;
    /* Reset the Buzz VM */
