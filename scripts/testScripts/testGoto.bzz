@@ -12,4 +12,5 @@ function reset() {
 }
 # Execute at exit
 function destroy() {
+  set_wheels(0.0, 0.0)
 }
