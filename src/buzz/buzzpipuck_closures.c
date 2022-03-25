@@ -136,6 +136,7 @@ int pipuck_goto(buzzvm_t vm) {
     set_motor_speeds(200, -200);
   }
   else {
+    printf("Bearing: %f", Rad2Deg(POSE[3]));
     //Aimed in the correct direction
     set_motor_speeds(200, 200);
   }
