@@ -112,9 +112,7 @@ float calculate_rel_distance(float* vect) {
 }
 
 int pipuck_goto(buzzvm_t vm) {
-  float vect[2], angle;
-
-  printf("X: %f, Y: %f, Z: %f, Theta: %f\n\r", POSE[0], POSE[1], POSE[2], POSE[3]);
+  float vect[2], angle, acceptable_error = 3;
 
   /*Retrieves X and Y Coordinates of Goto */
   buzzvm_lnum_assert(vm, 2);
@@ -123,44 +121,28 @@ int pipuck_goto(buzzvm_t vm) {
   buzzvm_type_assert(vm, 2, BUZZTYPE_FLOAT);
   buzzvm_type_assert(vm, 1, BUZZTYPE_FLOAT);
 
-  float gotoX = buzzvm_stack_at(vm, 2)->f.value;
-  float gotoY = buzzvm_stack_at(vm, 1)->f.value;
+  vect[0] = buzzvm_stack_at(vm, 2)->f.value;
+  vect[1] = buzzvm_stack_at(vm, 1)->f.value;
 
-  //Boolean value to determine if Goto has been completed
-  int GOTO = 1, acceptable_error = 3;
+  angle = calculate_rel_theta_deg(vect);
+  printf("The current angle is: %f, Aiming at: %f\n", Rad2Deg(POSE[3]), angle);
 
-  while (GOTO) {
-    /* Create a vector relative to the position of the robot */
-    vect[0]= gotoX - POSE[0];
-    vect[1]= gotoY - POSE[1];
-
-    angle = calculate_rel_theta_deg(vect);
-    printf("The current angle is: %f, Aiming at: %f\n", POSE[3], angle);
-
-    if (Rad2Deg(POSE[3]) > (angle + acceptable_error)) {
-      printf("Bearing > 3 Degrees");
-      set_motor_speeds(-500, 500);
-    }
-    else if (Rad2Deg(POSE[3]) > (angle - acceptable_error)) {
-      printf("Bearing < -3");
-      set_motor_speeds(500, -500);
-    }
-    else {
-      //Aimed in the correct direction
-      if (calculate_rel_distance(vect) > 0.05){
-        set_motor_speeds(500, 500);
-      }
-      else {
-        printf("Finished GOTO at location- X: %f, Y: %f", POSE[0], POSE[1]);
-        set_motor_speeds(0, 0);
-        GOTO = 0;
-      }
-    }
+  if (Rad2Deg(POSE[3]) > (angle + acceptable_error)) {
+    printf("Bearing > 3 Degrees");
+    set_motor_speeds(-200, 200);
+  }
+  else if (Rad2Deg(POSE[3]) > (angle - acceptable_error)) {
+    printf("Bearing < -3");
+    set_motor_speeds(200, -200);
+  }
+  else {
+    //Aimed in the correct direction
+    set_motor_speeds(200, 200);
+  }
 
   printf("Vector X: %f, Vector Y: %f\n\r", vect[0], vect[1]);
   printf("Pose[0]: %f, Pose[1]: %f, POSE[3]: %f\n\r", POSE[0], POSE[1], POSE[3]);
   printf("Calculated Angle: %f\n\r", angle);
-  }
 
   return buzzvm_ret0(vm);
 }
