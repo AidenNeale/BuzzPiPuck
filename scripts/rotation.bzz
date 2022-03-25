@@ -1,0 +1,228 @@
+
+# Write a table as if it was a matrix
+function write_knowledge(k, row, col, val) {
+    var key = string.concat(string.tostring(row),"-",string.tostring(col))
+    k[key] = val
+}
+
+# Read a table as if it was a matrix
+function read_knowledge(k, row, col) {
+    var key = string.concat(string.tostring(row),"-",string.tostring(col))
+    if (k[key] == nil) {
+        log("Warning: reading 'nil' value from the knowledge table, returning -1")
+        return -1
+    } else {
+        return k[key]
+    }
+}
+
+# Int to String
+function itos(i) {
+
+    log("Use 'string.tostring(OJB)' instead")
+
+    if (i==0) { return "0" }
+    if (i==1) { return "1" }
+    if (i==2) { return "2" }
+    if (i==3) { return "3" }
+    if (i==4) { return "4" }
+    if (i==5) { return "5" }
+    if (i==6) { return "6" }
+    if (i==7) { return "7" }
+    if (i==8) { return "8" }
+    if (i==9) { return "9" }
+
+    log("Function 'itos' out of bounds, returning the answer (42)")
+    return "42"
+}
+
+# String to Int
+function stoi(s) {
+   if (s=='0') { return 0 }
+   if (s=='1') { return 1 }
+   if (s=='2') { return 2 }
+   if (s=='3') { return 3 }
+   if (s=='4') { return 4 }
+   if (s=='5') { return 5 }
+   if (s=='6') { return 6 }
+   if (s=='7') { return 7 }
+   if (s=='8') { return 8 }
+   if (s=='9') { return 9 }
+
+   log("Function 'stoi' out of bounds, returning the answer (42)")
+   return 42
+
+}
+
+function inform_your_neighborhood() {
+    # Reset to 0 the visibility of all neighbors
+    foreach(knowledge, function(key, value) {
+          column = string.sub(key, string.length(key)-1,string.length(key))
+          if (column=='3') {
+              knowledge[key] = 0
+          }
+    })
+    neighbors.foreach( function(rid, data) {
+        # For each neighbor, send a message with its azimuth, as seen by the broadcasting robot
+        message_id = string.tostring(rid)
+        neighbors.broadcast(message_id, rtod(data.azimuth))
+        # Record the neighbor azimuth in my own knowledge table
+        write_knowledge(knowledge, rid, 0, rtod(data.azimuth))
+        # Record the neighbor distance in my own knowledge table
+        write_knowledge(knowledge, rid, 2, data.distance)
+        # Set neighbor as visible
+        write_knowledge(knowledge, rid, 3, 1)
+    })
+}
+
+function listen_to_your_neighborhood() {
+    # For all "senders" in my neighborhood, record my azimuth, as seen by them
+    message_id = string.tostring(id)
+    neighbors.listen(message_id, function(vid, value, rid) {
+        write_knowledge(knowledge, rid, 1, value)
+    })
+}
+
+# Rads to degrees
+function rtod(r) {
+   return (r*(180.0/math.pi))
+}
+
+# Degrees to rads
+function dtor(d) {
+   return (math.pi*(d/180.0))
+}
+
+# Force angles in the (-180,180) interval
+function degrees_interval(a) {
+    var temp = a
+    while ((temp>360.0) or (temp<0.0)) {
+        if (temp > 360.0) {
+            temp = temp - 360.0
+        } else if (temp < 0.0){
+            temp = temp + 360.0
+        }
+    }
+    if (temp > 180.0) {
+        temp = temp - 360.0
+    }
+    return temp
+}
+
+# Force angles in the (-pi,pi) interval
+function radians_interval(a) {
+    var temp = a
+    while ((temp>2.0*math.pi) or (temp<0.0)) {
+        if (temp > 2.0*math.pi) {
+            temp = temp - 2.0*math.pi
+        } else if (temp < 0.0){
+            temp = temp + 2.0*math.pi
+        }
+    }
+    if (temp > math.pi) {
+        temp = temp - 2.0*math.pi
+    }
+    return temp
+}
+
+function zero() {
+  # Do not move
+  goto(0.0,0.0)
+  # Tell the neighbors of the center where to go
+  inform_your_neighborhood()
+  neighbors.broadcast("dist_to_source", mydist)
+}
+
+# Align with robot with specified ID
+function align(robot) {
+  inform_your_neighborhood()
+  interval = (read_knowledge(knowledge,robot,0)) - (read_knowledge(knowledge,robot,1) + 180)
+  interval = degrees_interval(interval)
+  #debug(interval)
+  if(interval < 5 and interval > (-5)) {
+    goto(0.0,0.0)
+    statef = nextState
+  } else {
+    x_mov = math.cos(60)
+    y_mov = math.sin(60)
+    goto(x_mov,y_mov)
+  }
+}
+
+
+function rotate() {
+  # Broadcast information
+  inform_your_neighborhood()
+  if(read_knowledge(knowledge,0,3) == 1) {
+    align(0)
+  } else {
+    statef = rotateNeighbors
+  }
+}
+
+function rotateNeighbors() {
+  # Get closest neighbor that has been aligned
+  temp_dist = 0
+  desired_azimuth = 0
+  neighbors.foreach( function(rid, data) {
+    if ((read_knowledge(knowledge, rid, 5)<mydist) and (read_knowledge(knowledge, rid, 5) >= temp_dist)) {
+      temp_dist = read_knowledge(knowledge, rid, 5)
+      desired_id = rid
+    }
+  })
+
+  # Align with closest neighbor
+  align(desired_id)
+}
+
+function nextState() {
+  neighbors.broadcast("dist_to_source", mydist)
+  #debug("aligned")
+}
+
+# Obtain gradient from neighbors
+function dists() {
+  if(id == 0) {
+      # Source robot
+      mydist = 0.
+    }
+    else {
+      # Other robots
+      mydist = 1000
+      # Listen to other robots' distances
+      neighbors.listen("dist_to_source",
+        function(value_id, value, robot_id) {
+          write_knowledge(knowledge, robot_id, 5, value)
+          mydist = math.min( mydist, neighbors.get(robot_id).distance + value)
+            if (robot_id==0) {
+                mydist = neighbors.get(robot_id).distance
+            }
+        })
+    }
+}
+
+# Executed at init time
+function init() {
+  # Local knowledge table
+  knowledge = {}
+  statef = rotate
+  dists()
+  # Update local knowledge with information from the neighbors
+  listen_to_your_neighborhood()
+}
+
+# Executed every time step
+function step() {
+  if(id == 0) {
+    zero()
+  } else {
+    statef()
+  }
+}
+
+# Executed once when the robot (or the simulator) is reset.
+function reset() {
+}
+# Execute at exit
+function destroy() {
+}

@@ -1,0 +1,268 @@
+
+# Write a table as if it was a matrix
+function write_knowledge(k, row, col, val) {
+    var key = string.concat(string.tostring(row),"-",string.tostring(col))
+    k[key] = val
+}
+
+# Read a table as if it was a matrix
+function read_knowledge(k, row, col) {
+    var key = string.concat(string.tostring(row),"-",string.tostring(col))
+    if (k[key] == nil) {
+        log("Warning: reading 'nil' value from the knowledge table, returning -1")
+        return -1
+    } else {
+        return k[key]
+    }
+}
+
+
+# Int to String
+function itos(i) {
+
+    log("Use 'string.tostring(OJB)' instead")
+
+    if (i==0) { return "0" }
+    if (i==1) { return "1" }
+    if (i==2) { return "2" }
+    if (i==3) { return "3" }
+    if (i==4) { return "4" }
+    if (i==5) { return "5" }
+    if (i==6) { return "6" }
+    if (i==7) { return "7" }
+    if (i==8) { return "8" }
+    if (i==9) { return "9" }
+
+    log("Function 'itos' out of bounds, returning the answer (42)")
+    return "42"
+}
+
+# String to Int
+function stoi(s) {
+   if (s=='0') { return 0 }
+   if (s=='1') { return 1 }
+   if (s=='2') { return 2 }
+   if (s=='3') { return 3 }
+   if (s=='4') { return 4 }
+   if (s=='5') { return 5 }
+   if (s=='6') { return 6 }
+   if (s=='7') { return 7 }
+   if (s=='8') { return 8 }
+   if (s=='9') { return 9 }
+
+   log("Function 'stoi' out of bounds, returning the answer (42)")
+   return 42
+
+}
+
+function inform_your_neighborhood() {
+    # Reset to 0 the visibility of all neighbors
+    foreach(knowledge, function(key, value) {
+          column = string.sub(key, string.length(key)-1,string.length(key))
+          if (column=='3') {
+              knowledge[key] = 0
+          }
+    })
+    neighbors.foreach( function(rid, data) {
+        # For each neighbor, send a message with its azimuth, as seen by the broadcasting robot
+        message_id = string.tostring(rid)
+        neighbors.broadcast(message_id, rtod(data.azimuth))
+        # Record the neighbor azimuth in my own knowledge table
+        write_knowledge(knowledge, rid, 0, rtod(data.azimuth))
+        # Record the neighbor distance in my own knowledge table
+        write_knowledge(knowledge, rid, 2, data.distance)
+        # Set neighbor as visible
+        write_knowledge(knowledge, rid, 3, 1)
+    })
+}
+
+function listen_to_your_neighborhood() {
+    # For all "senders" in my neighborhood, record my azimuth, as seen by them
+    message_id = string.tostring(id)
+    neighbors.listen(message_id, function(vid, value, rid) {
+        write_knowledge(knowledge, rid, 1, value)
+    })
+}
+
+# Rads to degrees
+function rtod(r) {
+   return (r*(180.0/math.pi))
+}
+
+# Degrees to rads
+function dtor(d) {
+   return (math.pi*(d/180.0))
+}
+
+# Force angles in the (-180,180) interval
+function degrees_interval(a) {
+    var temp = a
+    while ((temp>360.0) or (temp<0.0)) {
+        if (temp > 360.0) {
+            temp = temp - 360.0
+        } else if (temp < 0.0){
+            temp = temp + 360.0
+        }
+    }
+    if (temp > 180.0) {
+        temp = temp - 360.0
+    }
+    return temp
+}
+
+# Force angles in the (-pi,pi) interval
+function radians_interval(a) {
+    var temp = a
+    while ((temp>2.0*math.pi) or (temp<0.0)) {
+        if (temp > 2.0*math.pi) {
+            temp = temp - 2.0*math.pi
+        } else if (temp < 0.0){
+            temp = temp + 2.0*math.pi
+        }
+    }
+    if (temp > math.pi) {
+        temp = temp - 2.0*math.pi
+    }
+    return temp
+}
+
+BARRIER_VSTIG = 101
+ROBOTS = 5 # n-1 robots (Excluding source)
+
+
+function barrier_set(threshold, transf) {
+  # debug("barrier set")
+  barrier = stigmergy.create(BARRIER_VSTIG)
+  statef = function() {
+    barrier_wait(threshold, transf)
+  }
+  log("barrier created")
+
+}
+
+function barrier_ready() {
+  barrier.put(id, 1)
+}
+
+function barrier_wait(threshold, transf) {
+  inform_your_neighborhood()
+  barrier.get(id)
+  if(barrier.size() >= threshold) {
+
+    barrier = nil
+    transf()
+  }
+}
+
+function rotate() {
+	# Change state to zero
+	statef = zero
+}
+
+function alignNearestBot(bot, angle) {
+	arm_offset = degrees_interval(read_knowledge(knowledge, bot, 1) - angle)
+  if (arm_offset<1 and arm_offset>(-1)) {
+      #Calculate the next angle
+  	  next_angle = degrees_interval(read_knowledge(knowledge, bot, 0) + 180)
+  	  goto(0.0,0.0)
+
+      # Put ID and next calculated angle for the rest of the robots to follow
+  	  vs.put("a", id)
+  	  vs.put("b", next_angle)
+
+      # Set robot as aligned
+  	  write_knowledge(knowledge, id, 4, 1)
+
+      # Ready for the next state
+  	  barrier_set(ROBOTS, rotate)
+  	  barrier_ready()
+
+  } else {
+    if (read_knowledge(knowledge, bot, 2) > 120.0) {  # Get closer if too far
+        x_mov = math.cos(dtor(read_knowledge(knowledge, bot, 0)))
+        y_mov = math.sin(dtor(read_knowledge(knowledge, bot, 0)))
+    } else if (read_knowledge(knowledge, bot, 2) < 20.0) { # Get further if too near
+        x_mov = -math.cos(dtor(read_knowledge(knowledge, bot, 0)))
+        y_mov = -math.sin(dtor(read_knowledge(knowledge, bot, 0)))
+    } else {
+        spiraling = 2.0+(id/10.0) # Fun stuff but be careful with this, it affects how a robots turns around a central node, use random number generation, eventually
+        if (arm_offset > 0) { # Clockwise
+
+            x_mov = -math.sin(dtor(read_knowledge(knowledge, bot, 0)))
+            y_mov = math.cos(dtor(read_knowledge(knowledge, bot, 0))) * spiraling
+        } else { # Counterclockwise
+            x_mov = math.sin(dtor(read_knowledge(knowledge, bot, 0)))
+            y_mov = -math.cos(dtor(read_knowledge(knowledge, bot, 0))) * spiraling
+        }
+    }
+    speed = 100
+    goto(speed * x_mov,speed * y_mov)
+  }
+}
+
+
+# Source robot
+function zero() {
+  # Do not move
+  goto(0.0,0.0)
+  inform_your_neighborhood()
+}
+
+# Rest of the robots
+function lineUp() {
+  # Broadcast information
+  inform_your_neighborhood()
+  if(read_knowledge(knowledge,id,4) != 1) {
+  	alignNearestBot(vs.get("a"), vs.get("b"))
+  }
+}
+
+
+#################################################
+### BUZZ FUNCTIONS ##############################
+#################################################
+
+# Executed at init time
+function init() {
+  s0 = swarm.create(0)
+  s1 = swarm.create(1)
+  s0.select( id == 0 )
+  s1 = s0.others(133)
+
+  # Local knowledge table
+  knowledge = {}
+  # Virtual Stigmergy
+  vs = stigmergy.create(2)
+  barrier = stigmergy.create(BARRIER_VSTIG)
+
+  iden = 0
+  vs_value = 0
+  angle = 270
+  posit = "0"
+
+  vs.put("a", vs_value) # ID for the next bot to follow
+  vs.put("b", angle)   # Angle for the next bot to follow
+  # vs.put("c", vs_value)
+  vs.put("d", posit) # Vstig for the position of the robot
+  # vs.put("e", iden) #
+
+  # Update local knowledge with information from the neighbors
+  listen_to_your_neighborhood()
+  # dists()
+  iteration_counter = 0
+  # Variables initialization
+  statef = lineUp
+}
+
+# Executed every time step
+function step() {
+  s0.exec(zero)
+  s1.exec(statef)
+}
+
+# Executed once when the robot (or the simulator) is reset.
+function reset() {
+}
+# Execute at exit
+function destroy() {
+}

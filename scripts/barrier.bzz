@@ -1,0 +1,59 @@
+# Barrier functions
+BARRIER_VSTIG = 101
+ROBOTS = 8 # Total number of robots
+
+
+# The final state
+function rgb_red() {
+  set_leds(255,0,0)
+  set_wheels(10.0,-10.0)
+}
+
+function barrier_set(threshold, transf) {
+  statef = function() {
+    barrier_wait(threshold, transf);
+  }
+}
+
+function barrier_ready() {
+  barrier.put(id, 1)
+}
+
+function barrier_wait(threshold, transf) {
+  barrier.get(id)
+  #debug("wait ", barrier.size())
+  set_wheels(0.0,0.0)
+  if(barrier.size() >= threshold) {
+    barrier = nil
+    statef = transf
+  }
+}
+
+
+function iterate() {
+  iteration = iteration + 1
+  set_wheels(-10.0,10.0)
+  #debug(iteration)
+  if(iteration % 30 == 0) {
+    barrier_set(ROBOTS, rgb_red)
+    barrier_ready()
+  }
+}
+
+function init() {
+  barrier = stigmergy.create(BARRIER_VSTIG)
+  # Set random number for every robot
+  math.rng.setseed(id)
+  iteration = math.rng.uniform(1,100)
+  statef = iterate
+}
+
+function step() {
+   statef()
+}
+
+function reset() {
+}
+
+function destroy() {
+}
