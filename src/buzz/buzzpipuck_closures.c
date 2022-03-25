@@ -10,6 +10,19 @@ float POSE[4] = {0, 0, 0, 0}; //X, Y, Z, Theta
 /****************************************/
 /****************************************/
 
+/*
+ * Function: buzz_pipuck_print
+ * ----------------------
+ * C Handler for Print Statements in Buzz
+ *
+ * Parameters:
+ * --------------------
+ * -> vm: Buzz VM
+ *
+ * Returns:
+ * --------------------
+ * -> buzzvm_ret0(vm): Current state of the Buzz VM
+ */
 int buzz_pipuck_print(buzzvm_t vm) {
    int i;
    for(i = 1; i < buzzdarray_size(vm->lsyms->syms); ++i) {
@@ -49,6 +62,19 @@ int buzz_pipuck_print(buzzvm_t vm) {
    return buzzvm_ret0(vm);
 }
 
+/*
+ * Function: pipuck_set_wheels
+ * ----------------------
+ * Sets the speed of the Pi-Pucks Motors through Buzz passed parameters
+ *
+ * Parameters:
+ * --------------------
+ * -> vm: Buzz VM
+ *
+ * Returns:
+ * --------------------
+ * -> buzzvm_ret0(vm): Current state of the Buzz VM
+ */
 int pipuck_set_wheels(buzzvm_t vm) {
    buzzvm_lnum_assert(vm, 2);
    buzzvm_lload(vm, 1); /* Left speed */
@@ -60,6 +86,19 @@ int pipuck_set_wheels(buzzvm_t vm) {
    return buzzvm_ret0(vm);
 }
 
+/*
+ * Function: pipuck_set_outer_leds
+ * ----------------------
+ * Sets the 8 Outer LEDs on the E-Puck dependent on passed boolean values
+ *
+ * Parameters:
+ * --------------------
+ * -> vm: Buzz VM
+ *
+ * Returns:
+ * --------------------
+ * -> buzzvm_ret0(vm): Current state of the Buzz VM
+ */
 int pipuck_set_outer_leds(buzzvm_t vm) {
   buzzvm_lnum_assert(vm, 8);
   buzzvm_lload(vm, 1); /* LED0 */
@@ -89,14 +128,50 @@ int pipuck_set_outer_leds(buzzvm_t vm) {
   return buzzvm_ret0(vm);
 }
 
+/*
+ * Function: WrapValue
+ * ----------------------
+ * Wraps the passed value between -Pi and Pi
+ *
+ * Parameters:
+ * --------------------
+ * -> *t_value: Pointer to a float to wrap
+ */
 void WrapValue(float *t_value) {
   while(*t_value > 3.1416) *t_value -= 2*3.1416;
   while(*t_value < -3.1416) *t_value += 2*3.1416;
 }
+
+/*
+ * Function: Rad2Deg
+ * ----------------------
+ * Convert given float from Radians to Degrees
+ *
+ * Parameters:
+ * --------------------
+ * -> t_value: Float to convert from Radians -> Degrees
+ *
+ * Returns:
+ * --------------------
+ * -> t_value * (180.0/3.1416): Calculation of Radians -> Degrees
+ */
 float Rad2Deg(float t_value) {
   return t_value * (180.0/3.1416);
 }
 
+/*
+ * Function: calculate_rel_theta_deg
+ * ----------------------
+ * Calculate the Goto Vector Angle in Degrees
+ *
+ * Parameters:
+ * --------------------
+ * -> *vect: Pointer to the Goto Vector
+ *
+ * Returns:
+ * --------------------
+ * -> Rad2Deg(angle): Calculation of the Goto Vector Angle in Degrees
+ */
 float calculate_rel_theta_deg(float *vect) {
 
   float angle = atan2(vect[1],vect[0]);
@@ -104,6 +179,20 @@ float calculate_rel_theta_deg(float *vect) {
   return Rad2Deg(angle);
 }
 
+
+/*
+ * Function: calculate_rel_distance
+ * ----------------------
+ * Calculate the length of the Goto Vector
+ *
+ * Parameters:
+ * --------------------
+ * -> *vect: Pointer to the Goto Vector
+ *
+ * Returns:
+ * --------------------
+ * -> fHeadingLength: Calculation of the Goto Vector Length
+ */
 float calculate_rel_distance(float* vect) {
    /* Get the length of the heading vector */
    float fHeadingLength = pow(vect[0], 2) + pow(vect[1], 2);
@@ -111,7 +200,27 @@ float calculate_rel_distance(float* vect) {
    return fHeadingLength;
 }
 
+/*
+ * Function: pipuck_goto
+ * ----------------------
+ * Moves the Pi-Puck in a direction based on its current position.
+ * E.G. Goto(1.0, 1.0) will move the Pi-Puck in the direction of
+ * atan2(1,1).
+ *
+ * Parameters:
+ * --------------------
+ * -> vm: Buzz VM
+ *
+ * Returns:
+ * --------------------
+ * -> buzzvm_ret0(vm): Current state of the Buzz VM
+ */
 int pipuck_goto(buzzvm_t vm) {
+  /*
+    NOTE: This could be improved by handling turning smoother to stop aggressive
+          motor shifting when oscilating at small angles
+  */
+
   float vect[2], angle, acceptable_error = 5;
 
   /*Retrieves X and Y Coordinates of Goto */
@@ -125,14 +234,11 @@ int pipuck_goto(buzzvm_t vm) {
   vect[1] = buzzvm_stack_at(vm, 1)->f.value;
 
   angle = calculate_rel_theta_deg(vect);
-  printf("The current angle is: %f, Aiming at: %f\n", Rad2Deg(POSE[3]), angle);
 
   if (Rad2Deg(POSE[3]) > (angle + acceptable_error)) {
-    printf("Bearing > 5 Degrees");
     set_motor_speeds(-100, 100);
   }
   else if (Rad2Deg(POSE[3]) < (angle - acceptable_error)) {
-    printf("Bearing < -5");
     set_motor_speeds(100, -100);
   }
   else {
@@ -140,14 +246,22 @@ int pipuck_goto(buzzvm_t vm) {
     set_motor_speeds(500, 500);
   }
 
-  printf("Vector X: %f, Vector Y: %f\n\r", vect[0], vect[1]);
-  printf("Pose[0]: %f, Pose[1]: %f, POSE[3]: %f\n\r", POSE[0], POSE[1], POSE[3]);
-  printf("Calculated Angle: %f\n\r", angle);
-
   return buzzvm_ret0(vm);
 }
 
-
+/*
+ * Function: buzz_sleep_ms
+ * ----------------------
+ * Initiates a Sleep Loop for the robot
+ *
+ * Parameters:
+ * --------------------
+ * -> vm: Buzz VM
+ *
+ * Returns:
+ * --------------------
+ * -> buzzvm_ret0(vm): Current state of the Buzz VM
+ */
 int buzz_sleep_ms(buzzvm_t vm) {
   buzzvm_lnum_assert(vm, 1);
   buzzvm_lload(vm, 1);
