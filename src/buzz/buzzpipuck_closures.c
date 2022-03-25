@@ -112,7 +112,7 @@ float calculate_rel_distance(float* vect) {
 }
 
 int pipuck_goto(buzzvm_t vm) {
-  float vect[2], angle, acceptable_error = 3;
+  float vect[2], angle, acceptable_error = 5;
 
   /*Retrieves X and Y Coordinates of Goto */
   buzzvm_lnum_assert(vm, 2);
@@ -128,16 +128,16 @@ int pipuck_goto(buzzvm_t vm) {
   printf("The current angle is: %f, Aiming at: %f\n", Rad2Deg(POSE[3]), angle);
 
   if (Rad2Deg(POSE[3]) > (angle + acceptable_error)) {
-    printf("Bearing > 3 Degrees");
-    set_motor_speeds(-200, 200);
+    printf("Bearing > 5 Degrees");
+    set_motor_speeds(-100, 100);
   }
   else if (Rad2Deg(POSE[3]) < (angle - acceptable_error)) {
-    printf("Bearing < -3");
-    set_motor_speeds(200, -200);
+    printf("Bearing < -5");
+    set_motor_speeds(100, -100);
   }
   else {
     //Aimed in the correct direction
-    set_motor_speeds(200, 200);
+    set_motor_speeds(400, 400);
   }
 
   printf("Vector X: %f, Vector Y: %f\n\r", vect[0], vect[1]);
