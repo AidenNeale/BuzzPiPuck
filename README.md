@@ -13,29 +13,30 @@ You will need all the dependencies Buzz Requires:
 
 In the eventuality of cmake not installing, run the following:
 ```
-sudo apt-get update
-
-sudo apt-get upgrade
-
-sudo apt-get install cmake
+sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install cmake -y
 ```
 ## Setup
 
 1. mkdir BuzzPiPuck && cd BuzzPiPuck
 2. Clone the Buzz & BuzzPiPuck Repository: git clone https://github.com/buzz-lang/Buzz.git buzz && git clone https://github.com/AidenNeale/BuzzPiPuck.git
+3. Buzz Installation
+4. BuzzPiPuck Installation
 
 ### Buzz Setup
-1. cd buzz
-2. mkdir build && cd build
-3. cmake ../src/
-4. sudo make
-5. sudo make install
-6. sudo ldconfig
-7. cd ../../
+```
+cd buzz
+mkdir build && cd build
+cmake ../src/
+sudo make
+sudo make install
+sudo ldconfig
+cd ../../
+```
 ### BuzzPiPuck Setup
-1. cd BuzzPiPuck
-2. mkdir build && cd build
-3. cmake ../src/
-4. sudo make
-
+```
+cd BuzzPiPuck
+mkdir build && cd build
+cmake ../src/
+sudo make
+```
 ## Running BuzzPiPuck
