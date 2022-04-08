@@ -9,6 +9,8 @@
 #include <signal.h>
 // #include "fc_inav.h"
 
+#define RUN_LENGTH (30U)
+
 static int done = 0;
 int DONE = 0;
 
@@ -134,18 +136,24 @@ int main(int argc, char** argv) {
 
   /* Set the Buzz bytecode */
   if(buzz_script_set(bcfname, dbgfname, RID)) {
-    static struct timeval t1, t2;
+    static struct timeval experiment_start_time, t1, t2;
     /* Main loop */
+    gettimeofday(&experiment_start_time,NULL);
     while(!done && !buzz_script_done()) {
       gettimeofday(&t1, NULL);
       buzz_script_step();
       gettimeofday(&t2, NULL);
       double elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000000 + (t2.tv_usec - t1.tv_usec);
+      double experimentElapsedTime = (t2.tv_sec - experiment_start_time.tv_sec) + ((t2.tv_usec - experiment_start_time.tv_usec) / 1000000);
       double sleepTime = FREQUENCY - elapsedTime;
       if(sleepTime>0){
         usleep(sleepTime);
       }
+      if(experimentElapsedTime > RUN_LENGTH){
+        done = 1;
+      }
     }
+
     /* Cleanup */
     buzz_script_destroy();
     pipuck_done();
