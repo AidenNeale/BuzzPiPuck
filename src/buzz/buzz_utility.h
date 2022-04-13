@@ -1,6 +1,5 @@
 #ifndef BUZZ_UTILITY_H
 #define BUZZ_UTILITY_H
-#include "fc_inav.h"
 
 extern int buzz_listen(const char* type, int msg_size, int RID);
 
@@ -12,9 +11,7 @@ extern void buzz_script_destroy();
 
 extern int buzz_script_done();
 
-// extern void camera_routine();
-
-// extern void start_blink();
+extern int DONE;
 
 // External parameters
 int FREQUENCY;

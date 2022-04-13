@@ -40,7 +40,6 @@ add_executable(bzzPuck
   buzz/buzz_utility.c               buzz/buzz_utility.h
   buzz/buzzpipuck_closures.c        buzz/buzzpipuck_closures.h
   buzz/pipuck_utility.c             buzz/pipuck_utility.h
-  buzz/fc_inav.cpp                  buzz/fc_inav.h
   buzz/include/src_puck/i2c.h                buzz/src_puck/i2c.c
   buzz/include/src_puck/PiPuck.h             buzz/src_puck/PiPuck.c
   buzz/bzzpuck.c)

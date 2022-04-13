@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-// #include "fc_inav.h"
 
 #define RUN_LENGTH (30U)
 
