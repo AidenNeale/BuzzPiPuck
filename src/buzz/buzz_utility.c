@@ -29,6 +29,7 @@ static int         UDP_LIST_STREAM = -1;
 static int         UDP_COMM_STREAM = -1;
 static uint8_t*    STREAM_SEND_BUF = NULL;
 static int         MSG_RANGE = 1.0;  //Max accepted range for msgs (m)
+static int         PACKET_LOSS_FACTOR = 0;
 static char        UDP_LIST_STREAM_PORT[10];
 
 // absolute positioning
@@ -444,21 +445,23 @@ void buzz_script_step() {
   while(PACKETS_FIRST) {
     /* Save next packet */
     n = PACKETS_FIRST->next;
-    /* Update Buzz neighbors information */
+
     uint8_t* pl = (uint8_t*)PACKETS_FIRST->payload;
-    float distance=0.0, azimuth=0.0, elevation=0.0;
-    size_t tot = 0; // Top of Tree
-    memcpy(&distance, pl+tot, sizeof(float));
-    tot += sizeof(float);
-    memcpy(&azimuth, pl+tot, sizeof(float));
-    tot += sizeof(float);
-    memcpy(&elevation, pl+tot, sizeof(float));
-    tot += sizeof(float);
 
-    // printf("Distance: %f, Azimuth: %f, Elevation: %f", distance, azimuth, elevation);
+    int random_num = rand() % 100; //NOTE: srand initialised in bzzpuck.c (random method could be improved)
+    if (random_num >= PACKET_LOSS_FACTOR) {
+      /* Update Buzz neighbors information */
+      float distance=0.0, azimuth=0.0, elevation=0.0;
+      size_t tot = 0; // Top of Tree
+      memcpy(&distance, pl+tot, sizeof(float));
+      tot += sizeof(float);
+      memcpy(&azimuth, pl+tot, sizeof(float));
+      tot += sizeof(float);
+      memcpy(&elevation, pl+tot, sizeof(float));
+      tot += sizeof(float);
 
-    // Skip the orientation
-    tot += sizeof(float);
+      // Skip the orientation
+      tot += sizeof(float);
 
     //if(x > MSG_RANGE) { // limit the msg range of the nieghbor
       buzzneighbors_add(VM, PACKETS_FIRST->id, distance, azimuth, elevation);
@@ -485,6 +488,7 @@ void buzz_script_step() {
          PACKETS_FIRST->id,
          buzzmsg_payload_frombuffer(pl + tot, (MSG_SIZE - tot)));
       */
+    }
 
     /* Erase packet */
     free(PACKETS_FIRST->payload);

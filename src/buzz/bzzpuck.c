@@ -64,6 +64,9 @@ static void ctrlc_handler(int sig) {
  * -> argv: Argument Vector (Array) storing passed arguments
  */
 int main(int argc, char** argv) {
+  //Initialise the random seed
+  srand(time(NULL));
+
   /* Parse command line */
   if(argc < 5) usage(argv[0], 0);
 
