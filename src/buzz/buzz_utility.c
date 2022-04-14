@@ -449,7 +449,6 @@ void buzz_script_step() {
     uint8_t* pl = (uint8_t*)PACKETS_FIRST->payload;
 
     int random_num = rand() % 100; //NOTE: srand initialised in bzzpuck.c (random method could be improved)
-    printf("Random Num: %d, Packet Loss Factor: %d", random_num, PACKET_LOSS_FACTOR);
     if (random_num >= PACKET_LOSS_FACTOR) {
       /* Update Buzz neighbors information */
       float distance=0.0, azimuth=0.0, elevation=0.0;
