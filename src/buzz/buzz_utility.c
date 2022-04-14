@@ -450,7 +450,6 @@ void buzz_script_step() {
 
     int random_num = rand() % 100; //NOTE: srand initialised in bzzpuck.c (random method could be improved)
     if (random_num >= PACKET_LOSS_FACTOR) {
-      printf("Random Number: %d", random_num);
       /* Update Buzz neighbors information */
       float distance=0.0, azimuth=0.0, elevation=0.0;
       size_t tot = 0; // Top of Tree
