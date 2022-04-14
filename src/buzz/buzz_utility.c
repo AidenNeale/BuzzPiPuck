@@ -29,7 +29,7 @@ static int         UDP_LIST_STREAM = -1;
 static int         UDP_COMM_STREAM = -1;
 static uint8_t*    STREAM_SEND_BUF = NULL;
 static int         MSG_RANGE = 1.0;  //Max accepted range for msgs (m)
-static int         PACKET_LOSS_FACTOR = 99;
+static int         PACKET_LOSS_FACTOR = 75;
 static char        UDP_LIST_STREAM_PORT[10];
 
 // absolute positioning
